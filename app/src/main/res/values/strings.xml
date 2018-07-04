@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ProjectTracker</string>
+    <string name="title_activity_projects">Projects</string>
+</resources>
