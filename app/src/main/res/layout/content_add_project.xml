@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     android:contextClickable="false"
     android:longClickable="false"
-    android:onClick="submitProject"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ville.devproc.projecttracker.ui.AddProject"
+    tools:context="com.ville.devproc.projecttracker.ui.Project.AddProject"
     tools:showIn="@layout/activity_add_project">
 
     <TextView

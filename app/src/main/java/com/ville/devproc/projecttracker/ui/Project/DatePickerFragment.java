@@ -1,4 +1,4 @@
-package com.ville.devproc.projecttracker.ui;
+package com.ville.devproc.projecttracker.ui.Project;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;

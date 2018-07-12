@@ -1,4 +1,4 @@
-package com.ville.devproc.projecttracker.ui;
+package com.ville.devproc.projecttracker.ui.Project;
 
 import android.app.DialogFragment;
 import android.app.PendingIntent;
@@ -6,7 +6,6 @@ import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ville.devproc.prTracker.R;
-import com.ville.devproc.projecttracker.MainActivity;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 
@@ -91,6 +89,7 @@ public class AddProject extends AppCompatActivity {
     /** Adds the inputted project into Database */
     public void submitProject(View view) {
 
+        Boolean isSubmitAllowed = false;
         String myFormat = "dd.MM.yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("fi", "FI"));
         Button btn = findViewById(R.id.pAddButton);
@@ -100,11 +99,10 @@ public class AddProject extends AppCompatActivity {
         String projectName = ((EditText) findViewById(R.id.pName_view)).getText().toString();
         if( projectName != null && !projectName.isEmpty() && !projectName.trim().isEmpty() ) {
             project.setName(projectName);
-            btn.setEnabled(true);
+            isSubmitAllowed = true;
         } else {
             Snackbar.make(view, "Project name can't be empty", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            btn.setEnabled(false);
         }
         project.setDescription( ((EditText) findViewById(R.id.pName_view)).getText().toString().trim() );
         project.setLocation( ((EditText) findViewById(R.id.pName_view)).getText().toString().trim() );
@@ -131,26 +129,28 @@ public class AddProject extends AppCompatActivity {
 
         project.setInputDate( Calendar.getInstance().getTimeInMillis() );
 
-        Snackbar.make(view, "Project: " + project.toString(), Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        Log.d("AddProjects", "ADD BUTTON PUSHED: ");
 
-        mDbHelper.createProject(project);
+        if( isSubmitAllowed ) {
+            mDbHelper.createProject(project);
 
+            // Return back to Projects view and reset activity back stack
+            Intent projectsIntent = new Intent(this, Projects.class);
 
-        // Return back to Projects view and reset activity back stack
-        Intent projectsIntent = new Intent(this, Projects.class);
+            PendingIntent pendingIntent =
+                    TaskStackBuilder.create(this)
+                            // add all of Project's parents to the stack,
+                            // followed by the Project itself.
+                            .addNextIntentWithParentStack(projectsIntent)
+                            .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        PendingIntent pendingIntent =
-                TaskStackBuilder.create(this)
-                    // add all of Project's parents to the stack,
-                    // followed by the Project itself.
-                    .addNextIntentWithParentStack(projectsIntent)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            // TODO: add popup query here, wheter the user want's to also update the created project (like adding workers).
 
-        try {
-            pendingIntent.send(this, 0, projectsIntent);
-        } catch(Exception e ) {
-            Log.d("AddProjects", "VIRHE: " + e.getMessage());
+            try {
+                pendingIntent.send(this, 0, projectsIntent);
+            } catch(Exception e ) {
+                Log.d("AddProjects", "VIRHE: " + e.getMessage());
+            }
         }
     }
 

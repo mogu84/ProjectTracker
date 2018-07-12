@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ville.devproc.prTracker.R;
-import com.ville.devproc.projecttracker.ui.Projects;
+import com.ville.devproc.projecttracker.ui.Project.Projects;
 
 public class MainActivity extends AppCompatActivity {
 
