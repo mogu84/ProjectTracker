@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ville.devproc.projecttracker.ui.Projects">
+    tools:context="com.ville.devproc.projecttracker.ui.AddProject">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,15 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_projects" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/ic_launcher_background"
-        app:srcCompat="@drawable/ic_note_add_white_24dp" />
+    <include layout="@layout/content_add_project" />
 
 </android.support.design.widget.CoordinatorLayout>

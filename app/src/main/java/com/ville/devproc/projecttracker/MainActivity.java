@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void launchAddProjects(View view) {
+    public void launchViewProjects(View view) {
         Intent intent = new Intent(this, Projects.class);
         startActivity(intent);
     }

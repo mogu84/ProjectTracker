@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:contextClickable="false"
+    android:longClickable="false"
+    android:onClick="submitProject"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ville.devproc.projecttracker.ui.AddProject"
+    tools:showIn="@layout/activity_add_project">
+
+    <TextView
+        android:id="@+id/pNameDesc_view"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Name"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pName_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pName_view" />
+
+    <EditText
+        android:id="@+id/pName_view"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/border_style"
+        android:cursorVisible="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="Name i.e. address"
+        android:inputType="text"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pNameDesc_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/pDescriptionDesc_view"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Description"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pDescription_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pDescription_view" />
+
+    <EditText
+        android:id="@+id/pDescription_view"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/border_style"
+        android:cursorVisible="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="Project description"
+        android:inputType="text"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pDescriptionDesc_view"
+        app:layout_constraintTop_toBottomOf="@+id/pName_view" />
+
+    <TextView
+        android:id="@+id/pLocationDesc_view"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Location"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pLocation_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pLocation_view" />
+
+    <EditText
+        android:id="@+id/pLocation_view"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/border_style"
+        android:cursorVisible="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="Location i.e. city area"
+        android:inputType="text"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pLocationDesc_view"
+        app:layout_constraintTop_toBottomOf="@+id/pDescription_view" />
+
+    <TextView
+        android:id="@+id/pStartdateDesc_view"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Start date"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pStartdate_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pStartdate_view" />
+
+    <TextView
+        android:id="@+id/pStartdate_view"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/border_style"
+        android:enabled="true"
+        android:focusable="false"
+        android:gravity="center"
+        android:hint="click to select"
+        android:inputType="none"
+        android:longClickable="false"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pStartdateDesc_view"
+        app:layout_constraintTop_toBottomOf="@+id/pLocation_view" />
+
+    <TextView
+        android:id="@+id/pEnddateDesc_view"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="End date"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pEnddate_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pEnddate_view" />
+
+    <TextView
+        android:id="@+id/pEnddate_view"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/border_style"
+        android:enabled="true"
+        android:focusable="false"
+        android:gravity="center"
+        android:hint="click to select"
+        android:inputType="none"
+        android:longClickable="false"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pEnddateDesc_view"
+        app:layout_constraintTop_toBottomOf="@+id/pStartdate_view" />
+
+    <Button
+        android:id="@+id/pAddButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="28dp"
+        android:onClick="submitProject"
+        android:text="Add"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pEnddate_view" />
+
+</android.support.constraint.ConstraintLayout>

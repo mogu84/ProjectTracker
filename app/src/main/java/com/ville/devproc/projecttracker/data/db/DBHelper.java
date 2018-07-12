@@ -65,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String LOG = DBHelper.class.getName();
 
     // Database version
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     //Database name
     public static final String DATABASE_NAME = "projects_db";
 
@@ -99,6 +99,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // ------------------- Project CRUD methods --------------------- //
     /** Creating a Project */
     public long createProject(Project project) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
@@ -111,6 +112,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // insert row
         long projectId = db.insert(Project.TABLE_NAME, null, values);
+
+        DatabaseManager.getInstance().closeDatabase();
 
         return projectId;
     }
@@ -138,6 +141,37 @@ public class DBHelper extends SQLiteOpenHelper {
         project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
 
         return project;
+    }
+    /** Query Projects*/
+    public Project query(int position) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        String selectQuery = "SELECT * FROM " + Project.TABLE_NAME +" ORDER BY " + Project.COLUMN_PROJECT_ID + " ASC " +"LIMIT " + position + ",1";
+
+        //Log.d(LOG, selectQuery);
+
+        Cursor c = null;
+        Project project = new Project();
+
+        try {
+            c = db.rawQuery(selectQuery, null);
+            c.moveToFirst();
+            project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
+            project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
+            project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
+            project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
+            project.setInputDate( c.getLong( c.getColumnIndex(Project.COLUMN_INPUT_DATE)) );
+            project.setStartDate( c.getLong( c.getColumnIndex(Project.COLUMN_START_DATE)) );
+            project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
+
+        } catch(Exception e) {
+            Log.e(LOG, "QUERY EXCEPTION! " + e.getMessage());
+        } finally {
+            c.close();
+            DatabaseManager.getInstance().closeDatabase();
+            return project;
+        }
     }
     /** Get all Projects */
     public List<Project> getAllProjects() {
@@ -170,15 +204,22 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     /** Get Project count */
     public int getProjectCount() {
-        String countQuery = "SELECT  * FROM " + Project.TABLE_NAME;
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
 
-        int count = cursor.getCount();
-        cursor.close();
-
-        // return count
-        return count;
+        String countQuery = "SELECT  * FROM " + Project.TABLE_NAME;
+        //Log.d(LOG, countQuery);
+        int count = 0;
+        try {
+            Cursor cursor = db.rawQuery(countQuery, null);
+            count = cursor.getCount();
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(LOG, "Project COUNT Exception! " + e.getMessage() );
+        } finally {
+            // return count
+            return count;
+        }
     }
     /** Update project */
     public int updateProject(Project project) {
