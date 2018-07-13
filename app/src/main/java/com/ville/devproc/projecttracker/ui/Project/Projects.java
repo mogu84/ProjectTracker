@@ -3,14 +3,23 @@ package com.ville.devproc.projecttracker.ui.Project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Projects extends AppCompatActivity {
 
@@ -18,20 +27,20 @@ public class Projects extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private ProjectListAdapter mAdapter;
+    private CheckBox mSelectCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        mSelectCheckBox = findViewById(R.id.projectSelectAll);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show(); */
                 launchAddProject(view);
             }
         });
@@ -48,8 +57,18 @@ public class Projects extends AppCompatActivity {
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // TODO 1: add DELETE selected projects functionality here (bind to delete button onClickListener).
-        // TODO 2: add select or deselect all project checkboxes functionality here (bind to the check all).
+        // bind select all functionality to listener and handle required functions
+        mSelectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mAdapter.checkAllItems(isChecked);
+            }
+        });
+
+    }
+
+    public void deleteSelectedProjects(View view) {
+        mAdapter.deleteCheckedProjects();
     }
 
     public void launchAddProject(View view) {

@@ -95,9 +95,8 @@ public class AddProject extends AppCompatActivity {
         Button btn = findViewById(R.id.pAddButton);
 
         Project project = new Project();
-        // TODO: check if name is empty
         String projectName = ((EditText) findViewById(R.id.pName_view)).getText().toString();
-        if( projectName != null && !projectName.isEmpty() && !projectName.trim().isEmpty() ) {
+        if( !projectName.isEmpty() && !projectName.trim().isEmpty() ) {
             project.setName(projectName);
             isSubmitAllowed = true;
         } else {
@@ -144,7 +143,7 @@ public class AddProject extends AppCompatActivity {
                             .addNextIntentWithParentStack(projectsIntent)
                             .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            // TODO: add popup query here, wheter the user want's to also update the created project (like adding workers).
+            // TODO: add popup query here, whether the user wants to also update the created project (like adding workers).
 
             try {
                 pendingIntent.send(this, 0, projectsIntent);

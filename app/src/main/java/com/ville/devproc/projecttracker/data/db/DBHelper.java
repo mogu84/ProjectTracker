@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ville.devproc.projecttracker.data.db.model.Project;
@@ -13,6 +14,7 @@ import com.ville.devproc.projecttracker.data.db.model.Timesheet;
 import com.ville.devproc.projecttracker.data.db.model.Worker;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -157,8 +159,8 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             c = db.rawQuery(selectQuery, null);
             c.moveToFirst();
-            project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
-            project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
+            project.setId( c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ));
+            project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME) ) );
             project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
             project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
             project.setInputDate( c.getLong( c.getColumnIndex(Project.COLUMN_INPUT_DATE)) );
@@ -178,7 +180,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Project> projects = new ArrayList<Project>();
         String selectQuery = "SELECT  * FROM " + Project.TABLE_NAME;
 
-        Log.e(LOG, selectQuery);
+        //Log.e(LOG, selectQuery);
 
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -187,7 +189,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 Project project = new Project();
-                project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
+                project.setId( c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ) );
                 project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
                 project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
                 project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
@@ -218,6 +220,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "Project COUNT Exception! " + e.getMessage() );
         } finally {
             // return count
+            DatabaseManager.getInstance().closeDatabase();
             return count;
         }
     }
@@ -237,11 +240,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.update(Project.TABLE_NAME, values, Project.COLUMN_PROJECT_ID + " = ?",
                 new String[] { String.valueOf(project.getId()) });
     }
-    /** Delete project */
+    /** Delete one project */
     public void deleteProject(long projectId) {
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
         db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " = ?",
                 new String[] { String.valueOf(projectId) });
+
+        DatabaseManager.getInstance().closeDatabase();
+    }
+    /**Delete multiple projects */
+    public Boolean deleteProjects(List<Integer> projectIds) {
+
+        Collections.sort(projectIds);
+        String idList = TextUtils.join(",", projectIds);
+
+        if(projectIds.size() <= 0 )
+            throw new IndexOutOfBoundsException("Cannot delete empty project list");
+
+        Log.v("deleteCheckedProjects", "DELETE FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID + " IN (" + idList + ");");
+
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        int results = db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " IN ("+idList+")",
+                null );
+
+        Log.v("deleteCheckedProjects", "Delete count: " + results);
+
+        DatabaseManager.getInstance().closeDatabase();
+
+        return results == projectIds.size();
     }
 
     // ------------------- Worker CRUD methods ---------------------- //
@@ -429,7 +457,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /** Update project */
     public boolean updateProjectWorker(ProjectWorker projectWorker) {
 
-        // TODO: NEEdS TESTING
+        // TODO: NEEDS TESTING
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         int updateResult = 1;
