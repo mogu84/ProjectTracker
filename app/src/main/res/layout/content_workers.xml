@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ville.devproc.projecttracker.ui.Project.Projects"
-    tools:showIn="@layout/activity_projects">
+    tools:context="com.ville.devproc.projecttracker.ui.Worker.Workers"
+    tools:showIn="@layout/activity_workers">
 
     <CheckBox
-        android:id="@+id/projectSelectAll"
+        android:id="@+id/workerSelectAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -30,13 +30,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/projectDeleteButton"
+        app:layout_constraintBottom_toTopOf="@+id/workerDeleteButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/projectSelectAll">
+        app:layout_constraintTop_toBottomOf="@+id/workerSelectAll">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/projectRecyclerView"
+            android:id="@+id/workerRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
@@ -44,20 +44,20 @@
             android:background="#f2f7ff"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            app:layout_constraintTop_toBottomOf="@+id/projectSelectAll">
+            app:layout_constraintTop_toBottomOf="@+id/workerSelectAll">
 
         </android.support.v7.widget.RecyclerView>
     </LinearLayout>
 
     <Button
-        android:id="@+id/projectDeleteButton"
+        android:id="@+id/workerDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:enabled="false"
-        android:onClick="deleteSelectedProjects"
+        android:onClick="deleteSelectedWorkers"
         android:text="Delete selected"
         android:textAllCaps="false"
         app:layout_anchor="@+id/include"

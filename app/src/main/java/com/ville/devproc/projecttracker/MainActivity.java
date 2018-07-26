@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.ui.Project.Projects;
+import com.ville.devproc.projecttracker.ui.Worker.Workers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchViewProjects(View view) {
         Intent intent = new Intent(this, Projects.class);
+        startActivity(intent);
+    }
+
+    public void launchViewWorkers(View view) {
+        Intent intent = new Intent(this, Workers.class);
         startActivity(intent);
     }
 

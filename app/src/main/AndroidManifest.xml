@@ -26,13 +26,31 @@
                 android:value="com.ville.devproc.projecttracker.MainActivity" />
         </activity>
         <activity
-            android:name="com.ville.devproc.projecttracker.ui.Project.AddProject"
+            android:name="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject"
             android:label="@string/title_activity_add_project"
             android:parentActivityName="com.ville.devproc.projecttracker.ui.Project.Projects"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ville.devproc.projecttracker.ui.Project.Projects" />
+        </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Worker.Workers"
+            android:label="@string/title_activity_workers"
+            android:parentActivityName="com.ville.devproc.projecttracker.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Worker.AddOrUpdateWorker"
+            android:label="@string/title_activity_add_worker"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Worker.Workers"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.ui.Worker.Workers" />
         </activity>
     </application>
 

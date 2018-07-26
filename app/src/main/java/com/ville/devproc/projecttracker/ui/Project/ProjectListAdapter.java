@@ -2,10 +2,10 @@ package com.ville.devproc.projecttracker.ui.Project;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +73,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ProjectListAdapter.ProjectViewHolder holder, final int position) {
 
-        Project current = mDB.query(position);
+        final Project current = mDB.query(position);
         final int mAdapterPos = holder.getAdapterPosition();
         final int mPosition = holder.getLayoutPosition();
 
@@ -105,19 +105,31 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
         });
 
         // Attach a click listener to the text views for the UPDATE activity
-        holder.projectItemView.setOnClickListener(new View.OnClickListener() {
+        holder.projectItemView.setOnClickListener(new ProjectOnClickListener( current ) {
             @Override
             public void onClick(View v) {
                 // TODO: add an UPDATE activity here
+                /*
                 Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                */
+
+                Intent intent = new Intent(mContext, AddOrUpdateProject.class);
+                intent.putExtra(Project.COLUMN_PROJECT_ID, current.getId());
+                intent.putExtra(Project.COLUMN_NAME, current.getName());
+                intent.putExtra(Project.COLUMN_DESCRIPTION, current.getDescription());
+                intent.putExtra(Project.COLUMN_LOCATION, current.getLocation());
+                intent.putExtra(Project.COLUMN_START_DATE, current.getStartDate());
+                intent.putExtra(Project.COLUMN_END_DATE, current.getEndDate());
+                intent.putExtra(Project.COLUMN_INPUT_DATE, current.getInputDate());
+                mContext.startActivity(intent);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mDB.getProjectCount();
+        return (int)mDB.getProjectCount();
     }
 
     public void deleteCheckedProjects() {

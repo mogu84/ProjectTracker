@@ -3,6 +3,7 @@ package com.ville.devproc.projecttracker.data.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
@@ -113,14 +114,19 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(Project.COLUMN_INPUT_DATE, project.getInputDate());
 
         // insert row
-        long projectId = db.insert(Project.TABLE_NAME, null, values);
-
-        DatabaseManager.getInstance().closeDatabase();
-
-        return projectId;
+        long projectId = 0;
+        try {
+            projectId = db.insert(Project.TABLE_NAME, null, values);
+        } catch(Exception e) {
+            Log.e(LOG, "PROJECT CREATE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return projectId;
+        }
     }
     /** Get single Project */
     public Project getProject(long projectId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         String selectQuery = "SELECT  * FROM " + Project.TABLE_NAME + " WHERE "
@@ -128,21 +134,27 @@ public class DBHelper extends SQLiteOpenHelper {
 
         Log.e(LOG, selectQuery);
 
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c != null)
-            c.moveToFirst();
-
+        Cursor c = null;
         Project project = new Project();
-        project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
-        project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
-        project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
-        project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
-        project.setInputDate( c.getLong( c.getColumnIndex(Project.COLUMN_INPUT_DATE)) );
-        project.setStartDate( c.getLong( c.getColumnIndex(Project.COLUMN_START_DATE)) );
-        project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
+        try {
+            c = db.rawQuery(selectQuery, null);
 
-        return project;
+            if (c != null)
+                c.moveToFirst();
+
+            project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
+            project.setName(c.getString(c.getColumnIndex(Project.COLUMN_NAME)));
+            project.setDescription(c.getString(c.getColumnIndex(Project.COLUMN_DESCRIPTION)));
+            project.setLocation(c.getString(c.getColumnIndex(Project.COLUMN_LOCATION)));
+            project.setInputDate(c.getLong(c.getColumnIndex(Project.COLUMN_INPUT_DATE)));
+            project.setStartDate(c.getLong(c.getColumnIndex(Project.COLUMN_START_DATE)));
+            project.setEndDate(c.getLong(c.getColumnIndex(Project.COLUMN_END_DATE)));
+        } catch (Exception e) {
+            Log.e(LOG, "PROJECT GET EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return project;
+        }
     }
     /** Query Projects*/
     public Project query(int position) {
@@ -158,7 +170,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
         try {
             c = db.rawQuery(selectQuery, null);
-            c.moveToFirst();
+
+            if(c != null)
+                c.moveToFirst();
+
             project.setId( c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ));
             project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME) ) );
             project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
@@ -168,7 +183,7 @@ public class DBHelper extends SQLiteOpenHelper {
             project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
 
         } catch(Exception e) {
-            Log.e(LOG, "QUERY EXCEPTION! " + e.getMessage());
+            Log.e(LOG, "PROJECT QUERY EXCEPTION! " + e.getMessage());
         } finally {
             c.close();
             DatabaseManager.getInstance().closeDatabase();
@@ -182,6 +197,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Log.e(LOG, selectQuery);
 
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -202,30 +218,38 @@ public class DBHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
+        DatabaseManager.getInstance().closeDatabase();
+
         return projects;
     }
     /** Get Project count */
-    public int getProjectCount() {
+    public long getProjectCount() {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
+        long count = 0;
+
+        /*
         String countQuery = "SELECT  * FROM " + Project.TABLE_NAME;
-        //Log.d(LOG, countQuery);
-        int count = 0;
+
+        Cursor cursor = db.rawQuery(countQuery, null);
+        count = cursor.getCount();
+        cursor.close();
+        */
+
         try {
-            Cursor cursor = db.rawQuery(countQuery, null);
-            count = cursor.getCount();
-            cursor.close();
+            count = DatabaseUtils.queryNumEntries(db, Project.TABLE_NAME);
         } catch (Exception e) {
             Log.e(LOG, "Project COUNT Exception! " + e.getMessage() );
         } finally {
-            // return count
             DatabaseManager.getInstance().closeDatabase();
+            // return count
             return count;
         }
     }
     /** Update project */
     public int updateProject(Project project) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
@@ -237,17 +261,32 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(Project.COLUMN_INPUT_DATE, project.getInputDate());
 
         // updating row
-        return db.update(Project.TABLE_NAME, values, Project.COLUMN_PROJECT_ID + " = ?",
-                new String[] { String.valueOf(project.getId()) });
+        int updatedRows = 0;
+        try {
+            updatedRows = db.update(Project.TABLE_NAME, values, Project.COLUMN_PROJECT_ID + " = ?",
+                    new String[]{String.valueOf(project.getId())});
+        } catch(Exception e) {
+            Log.e(LOG, "PROJECT UPDATE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return updatedRows;
+        }
     }
     /** Delete one project */
-    public void deleteProject(long projectId) {
+    public int deleteProject(long projectId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-        db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " = ?",
-                new String[] { String.valueOf(projectId) });
-
-        DatabaseManager.getInstance().closeDatabase();
+        int deletedRows = 0;
+        try {
+            deletedRows = db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " = ?",
+                    new String[]{String.valueOf(projectId)});
+        } catch(Exception e) {
+            Log.e(LOG, "PROJECT DELETE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return deletedRows;
+        }
     }
     /**Delete multiple projects */
     public Boolean deleteProjects(List<Integer> projectIds) {
@@ -258,110 +297,211 @@ public class DBHelper extends SQLiteOpenHelper {
         if(projectIds.size() <= 0 )
             throw new IndexOutOfBoundsException("Cannot delete empty project list");
 
-        Log.v("deleteCheckedProjects", "DELETE FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID + " IN (" + idList + ");");
-
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-        int results = db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " IN ("+idList+")",
-                null );
-
-        Log.v("deleteCheckedProjects", "Delete count: " + results);
-
-        DatabaseManager.getInstance().closeDatabase();
-
-        return results == projectIds.size();
+        int results = 0;
+        try {
+            results = db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " IN (" + idList + ")",
+                    null);
+        } catch (Exception e) {
+            Log.e(LOG, "PROJECT DELETE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return results == projectIds.size();
+        }
     }
+
 
     // ------------------- Worker CRUD methods ---------------------- //
     /** Creating a Worker */
     public long createWorker(Worker worker) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Worker.COLUMN_NAME, worker.getName());
 
         // insert row
-        long projectId = db.insert(Worker.TABLE_NAME, null, values);
-
-        return projectId;
+        long projectId = 0;
+        try {
+            db.insert(Worker.TABLE_NAME, null, values);
+        } catch(Exception e) {
+            Log.e(LOG, "WORKER CREATE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return projectId;
+        }
     }
     /** Get single Worker */
     public Worker getWorker(long workerId) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         String selectQuery = "SELECT  * FROM " + Worker.TABLE_NAME + " WHERE "
                 + Worker.COLUMN_WORKER_ID + " = " + workerId;
 
-        Log.e(LOG, selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c != null)
-            c.moveToFirst();
-
+        Cursor c = null;
         Worker worker = new Worker();
-        worker.setId(c.getColumnIndex(Worker.COLUMN_WORKER_ID));
-        worker.setName( c.getString( c.getColumnIndex(Worker.COLUMN_NAME)) );
+        try {
+            db.rawQuery(selectQuery, null);
 
-        return worker;
+            if (c != null)
+                c.moveToFirst();
+
+            worker.setId(c.getColumnIndex(Worker.COLUMN_WORKER_ID));
+            worker.setName( c.getString( c.getColumnIndex(Worker.COLUMN_NAME)) );
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return worker;
+        }
     }
     /** Get all Worker */
     public List<Worker> getAllWorkers() {
-        List<Worker> workers = new ArrayList<Worker>();
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
         String selectQuery = "SELECT  * FROM " + Worker.TABLE_NAME;
 
-        Log.e(LOG, selectQuery);
+        Cursor c = null;
+        List<Worker> workers = new ArrayList<Worker>();
+        try {
+            c = db.rawQuery(selectQuery, null);
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+            // looping through all rows and adding to list
+            if (c.moveToFirst()) {
+                do {
+                    Worker worker = new Worker();
+                    worker.setId(c.getInt( c.getColumnIndex(Worker.COLUMN_WORKER_ID) ) );
+                    worker.setName( c.getString( c.getColumnIndex(Worker.COLUMN_NAME)) );
 
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Worker worker = new Worker();
-                worker.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
-                worker.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
-
-                // adding to worker list
-                workers.add(worker);
-            } while (c.moveToNext());
+                    // adding to worker list
+                    workers.add(worker);
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(LOG, "WORKER GET ALL EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return workers;
         }
+    }
+    /** Query Workers*/
+    public Worker queryWorker(int position) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-        return workers;
+        String selectQuery = "SELECT * FROM " + Worker.TABLE_NAME +" ORDER BY " + Worker.COLUMN_WORKER_ID + " ASC " +"LIMIT " + position + ",1";
+
+        //Log.d(LOG, selectQuery);
+
+        Cursor c = null;
+        Worker worker = new Worker();
+        try {
+            c = db.rawQuery(selectQuery, null);
+            c.moveToFirst();
+            worker.setId( c.getInt( c.getColumnIndex(Worker.COLUMN_WORKER_ID) ));
+            worker.setName( c.getString( c.getColumnIndex(Worker.COLUMN_NAME) ) );
+            c.close();
+        } catch(Exception e) {
+            Log.e(LOG, "QUERY WORKER EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return worker;
+        }
     }
     /** Get Worker count */
-    public int getWorkerCount() {
+    public long getWorkerCount() {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        /*
         String countQuery = "SELECT  * FROM " + Worker.TABLE_NAME;
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
         int count = cursor.getCount();
         cursor.close();
+        */
 
-        // return count
-        return count;
+        long count = 0;
+        try {
+            count = DatabaseUtils.queryNumEntries(db, Worker.TABLE_NAME);
+        } catch( Exception e) {
+            Log.e(LOG, "WORKER COUNT EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            // return count
+            return count;
+        }
     }
     /** Update Worker */
     public int updateWorker(Worker worker) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Worker.COLUMN_NAME, worker.getName());
 
-        // updating row
-        return db.update(Worker.TABLE_NAME, values, Worker.COLUMN_WORKER_ID + " = ?",
-                new String[] { String.valueOf(worker.getId()) });
+        int updatedRows = 0;
+
+        try {
+            // updating row
+            updatedRows = db.update(Worker.TABLE_NAME, values, Worker.COLUMN_WORKER_ID + " = ?",
+                    new String[]{String.valueOf(worker.getId())});
+        } catch (Exception e){
+            Log.e(LOG, "WORKER UPDATE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return updatedRows;
+        }
     }
     /** Delete project */
-    public void deleteWorker(long workerId) {
+    public int deleteWorker(long workerId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-        db.delete(Worker.TABLE_NAME, Worker.COLUMN_WORKER_ID + " = ?",
-                new String[] { String.valueOf(workerId) });
+
+        int deleteCount = 0;
+        try {
+            deleteCount = db.delete(Worker.TABLE_NAME, Worker.COLUMN_WORKER_ID + " = ?",
+                    new String[]{String.valueOf(workerId)});
+        } catch( Exception e) {
+            Log.e(LOG, "WORKER DELETE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return deleteCount;
+        }
     }
+    /**Delete multiple projects */
+    public Boolean deleteWorkers(List<Integer> workerIds) {
+
+        Collections.sort(workerIds);
+        String idList = TextUtils.join(",", workerIds);
+
+        if(workerIds.size() <= 0 )
+            throw new IndexOutOfBoundsException("Cannot delete empty project list");
+
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        int results = 0;
+        try {
+            results = db.delete(Worker.TABLE_NAME, Worker.COLUMN_WORKER_ID + " IN (" + idList + ")",
+                    null);
+        } catch (Exception e) {
+            Log.e(LOG, "WORKER DELETE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return results == workerIds.size();
+        }
+    }
+
+
+
 
     // ----------------- ProjectWorker CRUD methods ----------------- //
     /** Create single ProjectWorker */
     public long createProjectWorker(int projectId, int workerId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
@@ -369,12 +509,19 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put( ProjectWorker.COLUMN_WORKER_ID, workerId );
 
         // insert row
-        long projectWorkerId = db.insert(ProjectWorker.TABLE_NAME, null, values);
-
-        return projectWorkerId;
+        long projectWorkerId = 0;
+        try {
+            projectWorkerId = db.insert(ProjectWorker.TABLE_NAME, null, values);
+        } catch (Exception e) {
+            Log.e(LOG, "PROJECTWORKER CREATE EXCEPTION! " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return projectWorkerId;
+        }
     }
     /** Creating a ProjectWorkers */
     public boolean createProjectWorkers(ProjectWorker projectWorker) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         boolean result = true;
@@ -396,7 +543,8 @@ public class DBHelper extends SQLiteOpenHelper {
     /** Get all Workers of a Project */
     public List<Worker> getProjectWorkers(long projectId) {
         List<Worker> workers = new ArrayList<Worker>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         String selectQuery = "SELECT * FROM " + Worker.TABLE_NAME + " WHERE "
                 + Worker.COLUMN_WORKER_ID + " IN (SELECT " + ProjectWorker.COLUMN_WORKER_ID
@@ -432,7 +580,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         Log.e(LOG, selectQuery);
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -456,8 +605,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     /** Update project */
     public boolean updateProjectWorker(ProjectWorker projectWorker) {
-
-        // TODO: NEEDS TESTING
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         int updateResult = 1;
@@ -476,15 +624,18 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     /** Delete project */
     public void deleteProjectWorker(long projectWorkerId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
         db.delete(Project.TABLE_NAME, Project.COLUMN_PROJECT_ID + " = ?",
                 new String[] { String.valueOf(projectWorkerId) });
     }
 
-    // ------------------ Timesheet CRUD methods -------------------- //
 
+    // ------------------ Timesheet CRUD methods -------------------- //
     /** Create single Timesheet */
     public long createTimesheet(Timesheet timesheet) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
@@ -502,7 +653,9 @@ public class DBHelper extends SQLiteOpenHelper {
     /** Get Timesheets of a Project between startDate and endDate*/
     public List<Timesheet> getProjectTimesheetsFrom(long projectId, long startDate, long endDate) {
         List<Timesheet> timesheets = new ArrayList<Timesheet>();
-        SQLiteDatabase db = this.getReadableDatabase();
+
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         String selectQuery = "SELECT * FROM " + Timesheet.TABLE_NAME + " WHERE " +
                 Timesheet.COLUMN_PROJECT_ID + " = " + projectId + " AND " +
@@ -538,7 +691,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         Log.e(LOG, selectQuery);
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -560,6 +714,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     /** Update Timesheet */
     public boolean updateTimesheet(Timesheet timesheet) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
@@ -577,7 +732,9 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     /** Delete project */
     public void deleteTimesheet(long timesheetId) {
+        DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
         db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_TIMESHEET_ID + " = ?",
                 new String[] { String.valueOf(timesheetId) });
     }

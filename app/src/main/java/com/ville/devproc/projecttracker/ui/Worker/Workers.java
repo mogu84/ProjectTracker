@@ -1,8 +1,9 @@
-package com.ville.devproc.projecttracker.ui.Project;
+package com.ville.devproc.projecttracker.ui.Worker;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,28 +14,29 @@ import android.widget.CompoundButton;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
+import com.ville.devproc.projecttracker.ui.Project.ProjectListAdapter;
 
-public class Projects extends AppCompatActivity {
+public class Workers extends AppCompatActivity {
 
     private DBHelper mDbHelper;
 
     private RecyclerView mRecyclerView;
-    private ProjectListAdapter mAdapter;
+    private WorkerListAdapter mAdapter;
     private CheckBox mSelectCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_projects);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        mSelectCheckBox = findViewById(R.id.projectSelectAll);
+        setContentView(R.layout.activity_workers);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mSelectCheckBox = findViewById(R.id.workerSelectAll);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchAddProject(view);
+                launchAddWorker(view);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -42,9 +44,9 @@ public class Projects extends AppCompatActivity {
         mDbHelper = new DBHelper(getApplicationContext());
 
         // Get a handle to the RecyclerView.
-        mRecyclerView = findViewById(R.id.projectRecyclerView);
+        mRecyclerView = findViewById(R.id.workerRecyclerView);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new ProjectListAdapter(this, mDbHelper);
+        mAdapter = new WorkerListAdapter(this, mDbHelper);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
@@ -57,15 +59,15 @@ public class Projects extends AppCompatActivity {
                 mAdapter.checkAllItems(isChecked);
             }
         });
-
     }
 
-    public void deleteSelectedProjects(View view) {
-        mAdapter.deleteCheckedProjects();
+    public void deleteSelectedWorkers(View view) {
+        mAdapter.deleteCheckedWorkers();
     }
 
-    public void launchAddProject(View view) {
-        Intent intent = new Intent(this, AddOrUpdateProject.class);
+    public void launchAddWorker(View view) {
+        Intent intent = new Intent(this, AddOrUpdateWorker.class);
         startActivity(intent);
     }
+
 }

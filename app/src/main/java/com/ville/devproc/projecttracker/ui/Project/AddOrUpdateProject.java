@@ -23,8 +23,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class AddProject extends AppCompatActivity {
+public class AddOrUpdateProject extends AppCompatActivity {
 
+    private static String LOG_TEXT = "AddOrUpdateProject";
+
+    private Boolean isUpdateProject;
+    private Project selectedProject;
+    private EditText mProjectName;
+    private EditText mProjectDescription;
+    private EditText mProjectLocation;
     private TextView mStartPickDate;
     private TextView mEndPickDate;
     private Calendar mStartDate;
@@ -35,18 +42,44 @@ public class AddProject extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_project);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDbHelper = new DBHelper(getApplicationContext());
 
+        Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
+        isUpdateProject = intent.hasExtra(Project.COLUMN_NAME);
+        selectedProject = new Project();
+
+        // In update set data from existing values
+        if( isUpdateProject ) {
+            getSupportActionBar().setTitle(getString(R.string.title_activity_update_project));
+            mProjectName = findViewById(R.id.pName_view);
+            mProjectDescription = findViewById(R.id.pDescription_view);
+            mProjectLocation = findViewById(R.id.pLocation_view);
+
+            selectedProject.setId(intent.getIntExtra(Project.COLUMN_PROJECT_ID, -1));
+            selectedProject.setName(intent.getStringExtra(Project.COLUMN_NAME));
+            selectedProject.setDescription(intent.getStringExtra(Project.COLUMN_DESCRIPTION));
+            selectedProject.setLocation(intent.getStringExtra(Project.COLUMN_LOCATION));
+            selectedProject.setStartDate(intent.getLongExtra(Project.COLUMN_START_DATE, 0));
+            selectedProject.setEndDate(intent.getLongExtra(Project.COLUMN_END_DATE, 0));
+            selectedProject.setInputDate(intent.getLongExtra(Project.COLUMN_INPUT_DATE, 0));
+
+            mProjectName.setText(selectedProject.getName());
+            mProjectDescription.setText(selectedProject.getDescription());
+            mProjectLocation.setText(selectedProject.getLocation());
+        }
+
         /* Capture View elements for the start date function */
-        mStartPickDate = (TextView) findViewById(R.id.pStartdate_view);
+        mStartPickDate = findViewById(R.id.pStartdate_view);
         /* get the current date */
         mStartDate = Calendar.getInstance();
-        /* display the current date (this method is below)  */
+        /* display the start date (this method is below)  */
+        if (isUpdateProject) {    // check if we have an update call
+            mStartDate.setTimeInMillis(selectedProject.getStartDate());
+        }
         updateDisplay(mStartPickDate, mStartDate);
 
         /* add a click listener to the TextView */
@@ -54,7 +87,7 @@ public class AddProject extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putInt("DATE",R.id.pStartdate_view);
+                bundle.putInt("DATE", R.id.pStartdate_view);
 
                 DialogFragment newFragment = new DatePickerFragment();
                 newFragment.setArguments(bundle);
@@ -63,11 +96,15 @@ public class AddProject extends AppCompatActivity {
             }
         });
 
+
         /* Capture View elements for the end date function */
-        mEndPickDate = (TextView) findViewById(R.id.pEnddate_view);
+        mEndPickDate = findViewById(R.id.pEnddate_view);
         /* get the current date */
         mEndDate = Calendar.getInstance();
-        /* display the current date (this method is below)  */
+        /* display the end date (this method is below)  */
+        if (isUpdateProject) {    // check if we have an update call
+            mEndDate.setTimeInMillis(selectedProject.getEndDate());
+        }
         updateDisplay(mEndPickDate, mEndDate);
 
         /* add a click listener to the TextView */
@@ -75,7 +112,7 @@ public class AddProject extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putInt("DATE",R.id.pEnddate_view);
+                bundle.putInt("DATE", R.id.pEnddate_view);
 
                 DialogFragment newFragment = new DatePickerFragment();
                 newFragment.setArguments(bundle);
@@ -86,7 +123,9 @@ public class AddProject extends AppCompatActivity {
     }
 
 
-    /** Adds the inputted project into Database */
+    /**
+     * Adds the inputted project into Database
+     */
     public void submitProject(View view) {
 
         Boolean isSubmitAllowed = false;
@@ -94,23 +133,22 @@ public class AddProject extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("fi", "FI"));
         Button btn = findViewById(R.id.pAddButton);
 
-        Project project = new Project();
         String projectName = ((EditText) findViewById(R.id.pName_view)).getText().toString();
-        if( !projectName.isEmpty() && !projectName.trim().isEmpty() ) {
-            project.setName(projectName);
+        if (!projectName.isEmpty() && !projectName.trim().isEmpty()) {
+            selectedProject.setName(projectName);
             isSubmitAllowed = true;
         } else {
             Snackbar.make(view, "Project name can't be empty", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
-        project.setDescription( ((EditText) findViewById(R.id.pName_view)).getText().toString().trim() );
-        project.setLocation( ((EditText) findViewById(R.id.pName_view)).getText().toString().trim() );
+        selectedProject.setDescription(((EditText) findViewById(R.id.pDescription_view)).getText().toString().trim());
+        selectedProject.setLocation(((EditText) findViewById(R.id.pLocation_view)).getText().toString().trim());
 
         // Parse and set project start date
         String mStartDateText = ((TextView) findViewById(R.id.pStartdate_view)).getText().toString().trim();
         try {
             Date mStartDateDate = sdf.parse(mStartDateText);
-            project.setStartDate( mStartDateDate.getTime() );
+            selectedProject.setStartDate(mStartDateDate.getTime());
         } catch (Exception e) {
             Snackbar.make(view, "Start Date parse failure", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -119,19 +157,23 @@ public class AddProject extends AppCompatActivity {
         // Parse and set project end date
         String mEndDateText = ((TextView) findViewById(R.id.pEnddate_view)).getText().toString().trim();
         try {
-            Date mEndDateDate = sdf.parse( mEndDateText );
-            project.setEndDate(mEndDateDate.getTime());
+            Date mEndDateDate = sdf.parse(mEndDateText);
+            selectedProject.setEndDate(mEndDateDate.getTime());
         } catch (Exception e) {
             Snackbar.make(view, "End Date parse failure", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
 
-        project.setInputDate( Calendar.getInstance().getTimeInMillis() );
+        if(!isUpdateProject)
+            selectedProject.setInputDate(Calendar.getInstance().getTimeInMillis());
 
-        Log.d("AddProjects", "ADD BUTTON PUSHED: ");
+        Log.d(LOG_TEXT, "ADD BUTTON PUSHED: ");
 
-        if( isSubmitAllowed ) {
-            mDbHelper.createProject(project);
+        if (isSubmitAllowed) {
+            if( isUpdateProject )
+                mDbHelper.updateProject(selectedProject);
+            else
+                mDbHelper.createProject(selectedProject);
 
             // Return back to Projects view and reset activity back stack
             Intent projectsIntent = new Intent(this, Projects.class);
@@ -147,8 +189,8 @@ public class AddProject extends AppCompatActivity {
 
             try {
                 pendingIntent.send(this, 0, projectsIntent);
-            } catch(Exception e ) {
-                Log.d("AddProjects", "VIRHE: " + e.getMessage());
+            } catch (Exception e) {
+                Log.d(LOG_TEXT, "VIRHE: " + e.getMessage());
             }
         }
     }
