@@ -1,5 +1,10 @@
 package com.ville.devproc.projecttracker.data.db.model;
 
+import android.util.JsonReader;
+import android.util.Log;
+
+import org.json.JSONObject;
+
 public class Project {
 
     public static final String TABLE_NAME = "project";
@@ -34,6 +39,25 @@ public class Project {
 
     public Project() {
 
+    }
+
+    /**
+     * Project constructor from jsonProject string.
+     * @param jsonProject: Project object in JSON string format.
+     */
+    public Project(String jsonProject) {
+        try {
+            JSONObject projectObj = new JSONObject(jsonProject);
+            this.setId( projectObj.getInt(COLUMN_PROJECT_ID) );
+            this.setName( projectObj.getString(COLUMN_NAME) );
+            this.setDescription( projectObj.getString(COLUMN_DESCRIPTION) );
+            this.setLocation( projectObj.getString(COLUMN_LOCATION) );
+            this.setStartDate( projectObj.getLong(COLUMN_START_DATE) );
+            this.setEndDate( projectObj.getLong(COLUMN_END_DATE) );
+            this.setInputDate( projectObj.getLong(COLUMN_INPUT_DATE) );
+        } catch (Exception e) {
+            Log.e("Project : " + TABLE_NAME, "JSON INIT ERROR: " + e.getMessage() );
+        }
     }
 
     public int getId() {
@@ -87,12 +111,20 @@ public class Project {
     }
 
     public String toString() {
-        return  "Project id: " + getId() + "\n" +
-                "Name: " + getName() + "\n" +
-                "Description: " + getDescription() + "\n" +
-                "Location: " + getLocation() + "\n" +
-                "Input date: " + getInputDate() + "\n" +
-                "Start date: " + getStartDate() + "\n" +
-                "End date: " + getEndDate();
+        JSONObject returnObj = new JSONObject();
+
+        try {
+            returnObj.put(COLUMN_PROJECT_ID, this.getId());
+            returnObj.put(COLUMN_NAME, this.getName());
+            returnObj.put(COLUMN_DESCRIPTION, this.getDescription());
+            returnObj.put(COLUMN_LOCATION, this.getLocation());
+            returnObj.put(COLUMN_START_DATE, this.getStartDate());
+            returnObj.put(COLUMN_END_DATE, this.getEndDate());
+            returnObj.put(COLUMN_INPUT_DATE, this.getInputDate());
+        } catch (Exception e) {
+            Log.e("Project : " + TABLE_NAME, "JSON TOSTRING ERROR: " + e.getMessage() );
+        }
+
+        return returnObj.toString();
     }
 }

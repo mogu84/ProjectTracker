@@ -114,8 +114,7 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
                 */
 
                 Intent intent = new Intent(mContext, AddOrUpdateWorker.class);
-                intent.putExtra(Worker.COLUMN_WORKER_ID, current.getId());
-                intent.putExtra(Worker.COLUMN_NAME, current.getName());
+                intent.putExtra(Worker.TABLE_NAME, current.toString());
                 mContext.startActivity(intent);
             }
         });

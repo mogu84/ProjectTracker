@@ -49,8 +49,7 @@ public class AddOrUpdateProject extends AppCompatActivity {
         mDbHelper = new DBHelper(getApplicationContext());
 
         Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
-        isUpdateProject = intent.hasExtra(Project.COLUMN_NAME);
-        selectedProject = new Project();
+        isUpdateProject = intent.hasExtra(Project.TABLE_NAME);
 
         // In update set data from existing values
         if( isUpdateProject ) {
@@ -59,17 +58,13 @@ public class AddOrUpdateProject extends AppCompatActivity {
             mProjectDescription = findViewById(R.id.pDescription_view);
             mProjectLocation = findViewById(R.id.pLocation_view);
 
-            selectedProject.setId(intent.getIntExtra(Project.COLUMN_PROJECT_ID, -1));
-            selectedProject.setName(intent.getStringExtra(Project.COLUMN_NAME));
-            selectedProject.setDescription(intent.getStringExtra(Project.COLUMN_DESCRIPTION));
-            selectedProject.setLocation(intent.getStringExtra(Project.COLUMN_LOCATION));
-            selectedProject.setStartDate(intent.getLongExtra(Project.COLUMN_START_DATE, 0));
-            selectedProject.setEndDate(intent.getLongExtra(Project.COLUMN_END_DATE, 0));
-            selectedProject.setInputDate(intent.getLongExtra(Project.COLUMN_INPUT_DATE, 0));
+            selectedProject = new Project(intent.getStringExtra(Project.TABLE_NAME));
 
             mProjectName.setText(selectedProject.getName());
             mProjectDescription.setText(selectedProject.getDescription());
             mProjectLocation.setText(selectedProject.getLocation());
+        } else {
+            selectedProject = new Project();
         }
 
         /* Capture View elements for the start date function */

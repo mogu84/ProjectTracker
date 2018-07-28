@@ -115,13 +115,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                 */
 
                 Intent intent = new Intent(mContext, AddOrUpdateProject.class);
-                intent.putExtra(Project.COLUMN_PROJECT_ID, current.getId());
-                intent.putExtra(Project.COLUMN_NAME, current.getName());
-                intent.putExtra(Project.COLUMN_DESCRIPTION, current.getDescription());
-                intent.putExtra(Project.COLUMN_LOCATION, current.getLocation());
-                intent.putExtra(Project.COLUMN_START_DATE, current.getStartDate());
-                intent.putExtra(Project.COLUMN_END_DATE, current.getEndDate());
-                intent.putExtra(Project.COLUMN_INPUT_DATE, current.getInputDate());
+                intent.putExtra(Project.TABLE_NAME, current.toString());
                 mContext.startActivity(intent);
             }
         });

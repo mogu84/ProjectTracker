@@ -40,17 +40,18 @@ public class AddOrUpdateWorker extends AppCompatActivity {
         mDbHelper = new DBHelper(getApplicationContext());
 
         Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
-        isUpdateWorker = intent.hasExtra(Worker.COLUMN_NAME);
-        selectedWorker = new Worker();
+        isUpdateWorker = intent.hasExtra(Worker.TABLE_NAME);
+
 
         // In update set data from existing values
         if( isUpdateWorker ) {
             getSupportActionBar().setTitle(getString(R.string.title_activity_update_worker));
 
-            selectedWorker.setId(intent.getIntExtra(Worker.COLUMN_WORKER_ID, -1));
-            selectedWorker.setName(intent.getStringExtra(Worker.COLUMN_NAME));
+            selectedWorker = new Worker(intent.getStringExtra(Worker.TABLE_NAME));
 
             mWorkerName.setText(selectedWorker.getName());
+        } else {
+            selectedWorker = new Worker();
         }
     }
 

@@ -1,5 +1,9 @@
 package com.ville.devproc.projecttracker.data.db.model;
 
+import android.util.Log;
+
+import org.json.JSONObject;
+
 public class Worker {
     public static final String TABLE_NAME = "worker";
 
@@ -14,6 +18,20 @@ public class Worker {
                 COLUMN_WORKER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NAME + " TEXT" +
             ")";
+
+    public Worker() {
+
+    }
+
+    public Worker(String jsonWorker) {
+        try {
+            JSONObject workerObject = new JSONObject(jsonWorker);
+            this.setId( workerObject.getInt(COLUMN_WORKER_ID) );
+            this.setName( workerObject.getString( COLUMN_NAME ) );
+        } catch(Exception e) {
+            Log.e("Worker : " + TABLE_NAME, "JSON INIT ERROR: " + e.getMessage() );
+        }
+    }
 
     public int getId() {
         return worker_id;
@@ -32,7 +50,15 @@ public class Worker {
     }
 
     public String toString() {
-        return  "Worker id: " + getId() + "\n" +
-                "name: " + getName();
+        JSONObject returnObject = new JSONObject();
+
+        try {
+            returnObject.put(COLUMN_WORKER_ID, this.getId());
+            returnObject.put(COLUMN_NAME, this.getName() );
+        } catch (Exception e) {
+            Log.e("Worker : " + TABLE_NAME, "JSON TOSTRING ERROR: " + e.getMessage() );
+        }
+
+        return returnObject.toString();
     }
 }
