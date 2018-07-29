@@ -31,7 +31,6 @@
         android:background="@drawable/border_style"
         android:cursorVisible="true"
         android:enabled="true"
-        android:focusable="true"
         android:focusableInTouchMode="true"
         android:hint="Name i.e. address"
         android:inputType="text|textCapSentences"
@@ -51,5 +50,66 @@
         android:text="Save"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wNameDesc_view" />
+
+    <Button
+        android:id="@+id/wAssignProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textCapWords"
+        android:onClick="assignToProject"
+        android:text="Assign to Project"
+        app:layout_constraintBottom_toBottomOf="@+id/wAddButton"
+        app:layout_constraintStart_toStartOf="@+id/wName_view"
+        app:layout_constraintTop_toTopOf="@+id/wAddButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/workerProjectsList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wAddButton">
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="18dp"
+            android:text="Projects assigned" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/workerProjectListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/workerProjectDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"
+            android:onClick="deleteSelectedProjects"
+            android:text="Delete selected" />
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,23 +1,28 @@
 package com.ville.devproc.projecttracker.ui.Worker;
 
+import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
-import com.ville.devproc.projecttracker.data.db.model.Project;
 import com.ville.devproc.projecttracker.data.db.model.Worker;
 
-public class AddOrUpdateWorker extends AppCompatActivity {
+public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterface.OnDismissListener {
 
     private static String LOG_TEXT = "AddOrUpdateProject";
 
@@ -25,6 +30,11 @@ public class AddOrUpdateWorker extends AppCompatActivity {
     private Worker selectedWorker;
     private EditText mWorkerName;
     private DBHelper mDbHelper;
+
+    private LinearLayout mWorkerProjects;
+    private RecyclerView mRecyclerView;
+    private WorkerProjectListAdapter mAdapter;
+    private CheckBox mSelectCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,23 +44,39 @@ public class AddOrUpdateWorker extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mWorkerName = findViewById(R.id.wName_view);
-
-
         mDbHelper = new DBHelper(getApplicationContext());
+
+        mWorkerName = findViewById(R.id.wName_view);
+        mWorkerProjects = findViewById(R.id.workerProjectsList);
 
         Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
         isUpdateWorker = intent.hasExtra(Worker.TABLE_NAME);
-
+        Button mAssignWorker = findViewById(R.id.wAssignProject);
 
         // In update set data from existing values
         if( isUpdateWorker ) {
+            mAssignWorker.setVisibility(View.VISIBLE);
+            mWorkerProjects.setVisibility(View.VISIBLE);
+
             getSupportActionBar().setTitle(getString(R.string.title_activity_update_worker));
 
             selectedWorker = new Worker(intent.getStringExtra(Worker.TABLE_NAME));
 
             mWorkerName.setText(selectedWorker.getName());
+
+
+            // Setup Projects already assigned to selected worker
+            mRecyclerView = findViewById(R.id.workerProjectListView);
+            // Create an adapter and supply the data to be displayed.
+            mAdapter = new WorkerProjectListAdapter(this, mDbHelper, selectedWorker.getId());
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         } else {
+            mAssignWorker.setVisibility(View.INVISIBLE);
+            mWorkerProjects.setVisibility(View.INVISIBLE);
             selectedWorker = new Worker();
         }
     }
@@ -100,4 +126,22 @@ public class AddOrUpdateWorker extends AppCompatActivity {
         }
     }
 
+    public void assignToProject(View view) {
+        DialogFragment dialog = new SelectProjectDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt(Worker.COLUMN_WORKER_ID, selectedWorker.getId());
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "abc");
+    }
+
+    public void deleteSelectedProjects(View view) {
+        mAdapter.deleteCheckedProjects();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        // Fragment dialog had been dismissed
+        Log.v(this.getClass().getName(), "DialogFragment Dismissed");
+        mAdapter.notifyDataSetChanged();
+    }
 }
