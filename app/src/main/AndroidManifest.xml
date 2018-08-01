@@ -52,6 +52,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ville.devproc.projecttracker.ui.Worker.Workers" />
         </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers"
+            android:label="@string/title_activity_edit_project_workers"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject" />
+        </activity>
     </application>
 
 </manifest>

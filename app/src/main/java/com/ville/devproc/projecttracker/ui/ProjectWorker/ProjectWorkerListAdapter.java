@@ -1,4 +1,4 @@
-package com.ville.devproc.projecttracker.ui.Worker;
+package com.ville.devproc.projecttracker.ui.ProjectWorker;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,12 +18,13 @@ import android.widget.TextView;
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Worker;
+import com.ville.devproc.projecttracker.ui.Worker.AddOrUpdateWorker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.WorkerViewHolder> {
+public class ProjectWorkerListAdapter extends RecyclerView.Adapter<ProjectWorkerListAdapter.WorkerViewHolder> {
 
     /**
      *  Custom view holder with a text view and a check box.
@@ -55,27 +56,28 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
     private SparseBooleanArray itemStateArray = new SparseBooleanArray();
     private View rootView;
     private Button deleteBtn;
+    private int projectId;
 
-    public WorkerListAdapter(Context context, DBHelper db) {
+    public ProjectWorkerListAdapter(Context context, DBHelper db, int projectId) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mDB = db;
         rootView = ((Activity)mContext).findViewById(android.R.id.content);
-        deleteBtn = rootView.findViewById(R.id.workerDeleteButton);
+        deleteBtn = rootView.findViewById(R.id.projectWorkerDeleteButton);
+        this.projectId = projectId;
     }
 
     @NonNull
     @Override
     public WorkerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.workerlist_item, parent, false);
-        return new WorkerListAdapter.WorkerViewHolder(mItemView);
+        return new ProjectWorkerListAdapter.WorkerViewHolder(mItemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WorkerViewHolder holder, int position) {
-        final Worker current = mDB.queryWorker(position);
+        final Worker current = mDB.queryProjectWorkers(position, projectId);
         final int mAdapterPos = holder.getAdapterPosition();
-        final int mPosition = holder.getLayoutPosition();
 
         holder.workerItemView.setText(current.getName());
         holder.bind(mAdapterPos);
@@ -123,7 +125,7 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
 
     @Override
     public int getItemCount() {
-        return (int)mDB.getWorkerCount();
+        return (int)mDB.getProjectWorkersCount(projectId);
     }
 
     protected class WorkerOnClickListener implements View.OnClickListener {
@@ -143,20 +145,15 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
     public void deleteCheckedWorkers() {
 
         Boolean isDeleteSuccess = false;
-        if(mCheckToWorkerMap.keySet().size() > 0) {
-            // TODO: Deletes only the selected Workers from the Timesheet table.
-
-            // Deletes only the selected Workers from the ProjectWorker table.
-            mDB.deleteAllProjectWorkers( new ArrayList<>(mCheckToWorkerMap.keySet()));
-
-            // Deletes only the selected Worker from the Worker table.
-            isDeleteSuccess = mDB.deleteWorkers(new ArrayList<>(mCheckToWorkerMap.keySet()));
-        }
+        if(mCheckToWorkerMap.keySet().size() > 0)
+            isDeleteSuccess = mDB.deleteProjectWorkers( projectId, new ArrayList<>( mCheckToWorkerMap.keySet() ) );
 
         if( isDeleteSuccess ) {
             checkAllItems(false);
+            Log.v(this.getClass().getName(), "deleteProjectWorker Success.");
         } else {
-            Snackbar.make(((Activity) mContext).findViewById(R.id.workerDeleteButton), "Deleting items was unsuccessful.",
+            Log.v(this.getClass().getName(), "deleteProjectWorker Failure.");
+            Snackbar.make(((Activity) mContext).findViewById(R.id.projectWorkerDeleteButton), "Deleting items was unsuccessful.",
                     Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }
@@ -167,7 +164,7 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
                 itemStateArray.put(i, true);
             }
 
-            List<Worker> workers = mDB.getAllWorkers();
+            List<Worker> workers = mDB.getProjectWorkers(projectId);
             for (Worker worker : workers) {
                 mCheckToWorkerMap.put(worker.getId(), worker);
             }

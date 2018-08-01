@@ -75,7 +75,7 @@ public class SelectProjectListViewAdapter extends BaseAdapter {
                     sortList.remove(position);
                     notifyDataSetChanged();
                 } else {
-                    Snackbar.make(finalView, "This Worker is already assigned to selected project.", Snackbar.LENGTH_LONG)
+                    Snackbar.make(finalView, "Worker already assigned to selected project.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }

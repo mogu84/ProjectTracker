@@ -44,6 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
         android:layout_marginTop="28dp"
         android:inputType="textCapWords"
         android:onClick="submitWorker"
@@ -63,7 +64,7 @@
         app:layout_constraintTop_toTopOf="@+id/wAddButton"
         app:layout_constraintVertical_bias="0.0" />
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/workerProjectsList"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -73,7 +74,6 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,23 +82,24 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="18dp"
-            android:text="Projects assigned" />
+            android:layout_marginTop="8dp"
+            android:text="Projects assigned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/workerProjectListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/workerProjectDeleteButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -106,10 +107,15 @@
             android:id="@+id/workerProjectDeleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:inputType="textCapWords"
             android:onClick="deleteSelectedProjects"
-            android:text="Delete selected" />
+            android:text="Delete selected"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

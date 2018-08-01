@@ -130,6 +130,10 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
 
         Boolean isDeleteSuccess = false;
         if(mCheckToProjectMap.keySet().size() > 0)
+
+            // Deletes only the selected Projects from the ProjectWorker table.
+            mDB.deleteAllProjectWorker( new ArrayList<>(mCheckToProjectMap.keySet()));
+
             isDeleteSuccess = mDB.deleteProjects( new ArrayList<>( mCheckToProjectMap.keySet() ) );
 
         if( isDeleteSuccess ) {

@@ -6,6 +6,7 @@ import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
@@ -31,7 +31,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
     private EditText mWorkerName;
     private DBHelper mDbHelper;
 
-    private LinearLayout mWorkerProjects;
+    private ConstraintLayout mWorkerProjects;
     private RecyclerView mRecyclerView;
     private WorkerProjectListAdapter mAdapter;
     private CheckBox mSelectCheckBox;
@@ -142,6 +142,11 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
     public void onDismiss(DialogInterface dialog) {
         // Fragment dialog had been dismissed
         Log.v(this.getClass().getName(), "DialogFragment Dismissed");
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mAdapter.notifyDataSetChanged();
     }
 }

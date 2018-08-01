@@ -17,6 +17,9 @@ import android.widget.TextView;
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
+import com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers;
+import com.ville.devproc.projecttracker.ui.Worker.AddOrUpdateWorker;
+import com.ville.devproc.projecttracker.ui.Worker.Workers;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,6 +40,7 @@ public class AddOrUpdateProject extends AppCompatActivity {
     private Calendar mStartDate;
     private Calendar mEndDate;
     private DBHelper mDbHelper;
+    private Button pAddWorkersButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +50,18 @@ public class AddOrUpdateProject extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        pAddWorkersButton = findViewById(R.id.pAddWorkersButton);
+
         mDbHelper = new DBHelper(getApplicationContext());
 
         Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
         isUpdateProject = intent.hasExtra(Project.TABLE_NAME);
 
+
         // In update set data from existing values
         if( isUpdateProject ) {
+            pAddWorkersButton.setVisibility(View.VISIBLE);
+
             getSupportActionBar().setTitle(getString(R.string.title_activity_update_project));
             mProjectName = findViewById(R.id.pName_view);
             mProjectDescription = findViewById(R.id.pDescription_view);
@@ -64,6 +73,7 @@ public class AddOrUpdateProject extends AppCompatActivity {
             mProjectDescription.setText(selectedProject.getDescription());
             mProjectLocation.setText(selectedProject.getLocation());
         } else {
+            pAddWorkersButton.setVisibility(View.INVISIBLE);
             selectedProject = new Project();
         }
 
@@ -170,8 +180,9 @@ public class AddOrUpdateProject extends AppCompatActivity {
             else
                 mDbHelper.createProject(selectedProject);
 
-            // Return back to Projects view and reset activity back stack
-            Intent projectsIntent = new Intent(this, Projects.class);
+            finish();
+            /*// Return back to Projects view and reset activity back stack
+            Intent projectsIntent = new Intent(this, Projects.class );;
 
             PendingIntent pendingIntent =
                     TaskStackBuilder.create(this)
@@ -180,14 +191,21 @@ public class AddOrUpdateProject extends AppCompatActivity {
                             .addNextIntentWithParentStack(projectsIntent)
                             .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            // TODO: add popup query here, whether the user wants to also update the created project (like adding workers).
-
             try {
                 pendingIntent.send(this, 0, projectsIntent);
             } catch (Exception e) {
                 Log.d(LOG_TEXT, "VIRHE: " + e.getMessage());
-            }
+            }*/
         }
+    }
+
+    /**
+     * Opens a view where Project Workers can be handled.
+     * */
+    public void launchProjectWorkers(View view) {
+        Intent intent = new Intent(this, EditProjectWorkers.class);
+        intent.putExtra(Project.TABLE_NAME, selectedProject.toString());
+        startActivity(intent);
     }
 
     private void updateDisplay(TextView editField, Calendar date) {

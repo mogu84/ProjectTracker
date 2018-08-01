@@ -574,7 +574,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return result;
     }
     /** Query ProjectWorker*/
-    public Project queryProjectWorker(int position, int workerId) {
+    public Project queryWorkerProjects(int position, int workerId) {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
@@ -608,6 +608,36 @@ public class DBHelper extends SQLiteOpenHelper {
             return project;
         }
     }
+    /** Query ProjectWorker*/
+    public Worker queryProjectWorkers(int position, int projectId) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        String selectProjectWorkerQuery = "SELECT "+ ProjectWorker.COLUMN_WORKER_ID +" FROM " + ProjectWorker.TABLE_NAME + " WHERE " + ProjectWorker.COLUMN_PROJECT_ID + " = " + projectId + " ORDER BY " + ProjectWorker.COLUMN_PROJECT_ID + " ASC " +"LIMIT " + position + ",1";
+        String selectQuery = "SELECT * FROM " + Worker.TABLE_NAME +" WHERE " + Worker.COLUMN_WORKER_ID + " IN (" + selectProjectWorkerQuery + ")";
+
+        //Log.d(LOG, selectQuery);
+
+        Cursor c = null;
+        Worker worker = new Worker();
+
+        try {
+            c = db.rawQuery(selectQuery, null);
+
+            if(c != null)
+                c.moveToFirst();
+
+            worker.setId( c.getInt( c.getColumnIndex(Worker.COLUMN_WORKER_ID) ));
+            worker.setName( c.getString( c.getColumnIndex(Worker.COLUMN_NAME) ) );
+
+        } catch(Exception e) {
+            Log.e(LOG, "WORKER QUERY EXCEPTION! " + e.getMessage());
+        } finally {
+            c.close();
+            DatabaseManager.getInstance().closeDatabase();
+            return worker;
+        }
+    }
     /** Get all Workers of a Project */
     public List<Worker> getProjectWorkers(long projectId) {
         List<Worker> workers = new ArrayList<Worker>();
@@ -619,8 +649,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 + " FROM " + ProjectWorker.TABLE_NAME + " WHERE "
                 + ProjectWorker.COLUMN_PROJECT_ID + " = " + projectId + ")";
 
-        Log.e(LOG, selectQuery);
-
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -628,9 +656,8 @@ public class DBHelper extends SQLiteOpenHelper {
             do {
                 Worker worker = new Worker();
                 worker.setId(c.getInt((c.getColumnIndex(Worker.COLUMN_WORKER_ID))));
-                worker.setName((c.getString(c.getColumnIndex(Worker.TABLE_NAME))));
+                worker.setName((c.getString(c.getColumnIndex(Worker.COLUMN_NAME))));
 
-                // adding to Workder list
                 workers.add(worker);
             } while (c.moveToNext());
         }
@@ -672,7 +699,24 @@ public class DBHelper extends SQLiteOpenHelper {
         return projects;
     }
     /** Get ProjectWorker count for specific Worker */
-    public long getProjectWorkerCount(int workerId) {
+    public long getProjectWorkersCount(int projectId) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        long count = 0;
+
+        try {
+            count = DatabaseUtils.queryNumEntries(db, ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_PROJECT_ID + "=?", new String[] { String.valueOf(projectId) } );
+        } catch (Exception e) {
+            Log.e(LOG, "ProjectWorkers COUNT Exception! " + e.getMessage() );
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            // return count
+            return count;
+        }
+    }
+    /** Get ProjectWorker count for specific Worker */
+    public long getWorkerProjectsCount(int workerId) {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
@@ -681,7 +725,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             count = DatabaseUtils.queryNumEntries(db, ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_WORKER_ID + "=?", new String[] { String.valueOf(workerId) } );
         } catch (Exception e) {
-            Log.e(LOG, "Project COUNT Exception! " + e.getMessage() );
+            Log.e(LOG, "WorkerProjects COUNT Exception! " + e.getMessage() );
         } finally {
             DatabaseManager.getInstance().closeDatabase();
             // return count
@@ -732,21 +776,46 @@ public class DBHelper extends SQLiteOpenHelper {
         return updateResult == 1;
     }
     /** Delete project */
-    public void deleteProjectWorker(long projectWorkerId) {
+    public int deleteAllProjectWorker(List<Integer> projectIds) {
+        Collections.sort(projectIds);
+        String idList = TextUtils.join(",", projectIds);
+
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
+        int results = 0;
         try {
-            db.delete(ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_WORKER_ID + " = ?",
-                    new String[] { String.valueOf(projectWorkerId) });
+            results = db.delete(ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_PROJECT_ID + " IN (" + idList + ")", null);
         } catch(Exception e) {
-            Log.e(LOG, ProjectWorker.class.getName() + " delete " + e.getMessage());
+            Log.e(LOG, "PROJECT_WORKERS DELETE EXCEPTION " + e.getMessage());
         } finally {
             DatabaseManager.getInstance().closeDatabase();
+            return results;
         }
     }
-    /** Delete list of projects from a specific worker */
-    public boolean deleteProjectWorkers(int workerId, List<Integer> projectIds) {
+    /** Delete all ProjectWorker rows from specific workerIds */
+    public int deleteAllProjectWorkers(List<Integer> workerIds) {
+        Collections.sort(workerIds);
+        String idList = TextUtils.join(",", workerIds);
+
+        if(workerIds.size() <= 0 )
+            throw new IndexOutOfBoundsException("Cannot delete empty project list");
+
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        int results = 0;
+        try {
+            results = db.delete( ProjectWorker.TABLE_NAME,ProjectWorker.COLUMN_WORKER_ID + " IN (" + idList + ")",null );
+        } catch (Exception e) {
+            Log.e(LOG, "PROJECT_WORKERS DELETE EXCEPTION " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return results;
+        }
+    }
+    /** Delete all ProjectWorker rows from specific workerId */
+    public boolean deleteWorkerProjects(int workerId, List<Integer> projectIds) {
         Collections.sort(projectIds);
         String idList = TextUtils.join(",", projectIds);
 
@@ -761,14 +830,14 @@ public class DBHelper extends SQLiteOpenHelper {
             results = db.delete(ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_WORKER_ID + "=? AND " + ProjectWorker.COLUMN_PROJECT_ID + " IN (" + idList + ")",
                     new String[] { String.valueOf(workerId) } );
         } catch (Exception e) {
-            Log.e(LOG, "PROJECT DELETE EXCEPTION " + e.getMessage());
+            Log.e(LOG, "WORKER_PROJECT DELETE EXCEPTION " + e.getMessage());
         } finally {
             DatabaseManager.getInstance().closeDatabase();
             return results == projectIds.size();
         }
     }
-    /** Delete all rows from specific workerIds */
-    public boolean deleteProjectWorkers(List<Integer> workerIds) {
+    /** Delete all ProjectWorker rows from specific projectId */
+    public boolean deleteProjectWorkers(int projectId, List<Integer> workerIds) {
         Collections.sort(workerIds);
         String idList = TextUtils.join(",", workerIds);
 
@@ -780,9 +849,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
         int results = 0;
         try {
-            results = db.delete(ProjectWorker.TABLE_NAME, ProjectWorker.COLUMN_WORKER_ID + " IN (" + idList + ")", null);
+            results = db.delete(
+                        ProjectWorker.TABLE_NAME,
+                        ProjectWorker.COLUMN_PROJECT_ID + "=? AND " + ProjectWorker.COLUMN_WORKER_ID + " IN (" + idList + ")",
+                        new String[] { String.valueOf(projectId) }
+                    );
         } catch (Exception e) {
-            Log.e(LOG, "PROJECT DELETE EXCEPTION " + e.getMessage());
+            Log.e(LOG, "PROJECT_WORKERS DELETE EXCEPTION " + e.getMessage());
         } finally {
             DatabaseManager.getInstance().closeDatabase();
             return results == workerIds.size();

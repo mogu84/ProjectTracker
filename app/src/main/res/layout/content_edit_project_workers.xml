@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers"
+    tools:showIn="@layout/activity_edit_project_workers">
+
+    <TextView
+        android:id="@+id/projectWorkerNameHeader"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Project "
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/projectWorkerNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/projectWorkerNameHeader"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/projectWorkerDescriptionHeader"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="Description "
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerNameHeader" />
+
+    <TextView
+        android:id="@+id/projectWorkerDescriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/projectWorkerDescriptionHeader"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerNameTextView"/>
+
+    <TextView
+        android:id="@+id/projectWorkerLocationHeader"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="Location "
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerDescriptionHeader" />
+
+    <TextView
+        android:id="@+id/projectWorkerLocationTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/projectWorkerLocationHeader"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerDescriptionTextView"/>
+
+    <TextView
+        android:id="@+id/projectWorkerStartDateHeader"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="Start date "
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerLocationHeader" />
+
+    <TextView
+        android:id="@+id/projectWorkerStartDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/projectWorkerStartDateHeader"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerLocationTextView"/>
+
+    <TextView
+        android:id="@+id/projectWorkerEndDateHeader"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="Start date "
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerStartDateHeader" />
+
+    <TextView
+        android:id="@+id/projectWorkerEndDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/projectWorkerEndDateHeader"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerStartDateTextView"/>
+
+    <Button
+        android:id="@+id/pwAssignWorkersButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:inputType="textCapWords"
+        android:text="Assign workers"
+        app:layout_constraintBottom_toTopOf="@+id/projectWorkerLinearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerEndDateTextView" />
+
+    <Button
+        android:id="@+id/pwEditProjectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:inputType="textCapWords"
+        android:text="Edit project"
+        app:layout_constraintBottom_toTopOf="@+id/projectWorkerLinearLayout"
+        app:layout_constraintEnd_toStartOf="@+id/pwAssignWorkersButton"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerEndDateTextView" />
+
+    <CheckBox
+        android:id="@+id/projectWorkerSelectAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="Select all"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerEndDateTextView" />
+
+    <LinearLayout
+        android:id="@+id/projectWorkerLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/projectWorkerDeleteButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/projectWorkerSelectAll">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/projectWorkerRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="#f2f7ff"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/projectWorkerDeleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:enabled="false"
+        android:onClick="deleteSelectedWorkers"
+        android:text="Delete selected"
+        android:textAllCaps="false"
+        app:layout_anchorGravity="left|bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

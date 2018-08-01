@@ -78,7 +78,7 @@ public class WorkerProjectListAdapter extends RecyclerView.Adapter<WorkerProject
     @Override
     public void onBindViewHolder(@NonNull WorkerProjectListAdapter.ProjectViewHolder holder, final int position) {
 
-        final Project current = mDB.queryProjectWorker(position, workerId);
+        final Project current = mDB.queryWorkerProjects(position, workerId);
         final int mAdapterPos = holder.getAdapterPosition();
 
         holder.projectItemView.setText(current.getName());
@@ -120,21 +120,21 @@ public class WorkerProjectListAdapter extends RecyclerView.Adapter<WorkerProject
 
                 Intent intent = new Intent(mContext, AddOrUpdateProject.class);
                 intent.putExtra(Project.TABLE_NAME, current.toString());
-                mContext.startActivity(intent);
+                ((Activity)mContext).startActivityForResult(intent, 1);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return (int)mDB.getProjectWorkerCount(workerId);
+        return (int)mDB.getWorkerProjectsCount(workerId);
     }
 
     public void deleteCheckedProjects() {
 
         Boolean isDeleteSuccess = false;
         if(mCheckToProjectMap.keySet().size() > 0)
-            isDeleteSuccess = mDB.deleteProjectWorkers( workerId, new ArrayList<>( mCheckToProjectMap.keySet() ) );
+            isDeleteSuccess = mDB.deleteWorkerProjects( workerId, new ArrayList<>( mCheckToProjectMap.keySet() ) );
 
         if( isDeleteSuccess ) {
             checkAllItems(false);
@@ -166,7 +166,7 @@ public class WorkerProjectListAdapter extends RecyclerView.Adapter<WorkerProject
                 itemStateArray.put(i, true);
             }
 
-            List<Project> projects = mDB.getAllProjects();
+            List<Project> projects = mDB.getWorkerProjects(workerId);
             for (Project project : projects) {
                 mCheckToProjectMap.put(project.getId(), project);
             }

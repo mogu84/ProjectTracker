@@ -66,6 +66,11 @@ public class Projects extends AppCompatActivity {
 
     public void launchAddProject(View view) {
         Intent intent = new Intent(this, AddOrUpdateProject.class);
-        startActivity(intent);
+        startActivityForResult(intent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mAdapter.notifyDataSetChanged();
     }
 }
