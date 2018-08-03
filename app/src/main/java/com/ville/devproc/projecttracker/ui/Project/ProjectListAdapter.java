@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
+import com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +76,6 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
 
         final Project current = mDB.query(position);
         final int mAdapterPos = holder.getAdapterPosition();
-        final int mPosition = holder.getLayoutPosition();
 
         holder.projectItemView.setText(current.getName());
         holder.bind(mAdapterPos);
@@ -114,7 +114,7 @@ public class ProjectListAdapter extends RecyclerView.Adapter<ProjectListAdapter.
                         .setAction("Action", null).show();
                 */
 
-                Intent intent = new Intent(mContext, AddOrUpdateProject.class);
+                Intent intent = new Intent(mContext, EditProjectWorkers.class);
                 intent.putExtra(Project.TABLE_NAME, current.toString());
                 mContext.startActivity(intent);
             }

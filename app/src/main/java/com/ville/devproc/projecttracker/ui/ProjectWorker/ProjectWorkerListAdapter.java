@@ -118,6 +118,7 @@ public class ProjectWorkerListAdapter extends RecyclerView.Adapter<ProjectWorker
 
                 Intent intent = new Intent(mContext, AddOrUpdateWorker.class);
                 intent.putExtra(Worker.TABLE_NAME, current.toString());
+                intent.putExtra("EditOnly", true);
                 mContext.startActivity(intent);
             }
         });

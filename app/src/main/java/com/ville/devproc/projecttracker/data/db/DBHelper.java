@@ -186,7 +186,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "PROJECT QUERY EXCEPTION! " + e.getMessage());
         } finally {
             c.close();
-            DatabaseManager.getInstance().closeDatabase();
+            //DatabaseManager.getInstance().closeDatabase();
             return project;
         }
     }
@@ -439,7 +439,7 @@ public class DBHelper extends SQLiteOpenHelper {
         } catch(Exception e) {
             Log.e(LOG, "QUERY WORKER EXCEPTION! " + e.getMessage());
         } finally {
-            DatabaseManager.getInstance().closeDatabase();
+            //DatabaseManager.getInstance().closeDatabase();
             return worker;
         }
     }
@@ -604,7 +604,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "PROJECT QUERY EXCEPTION! " + e.getMessage());
         } finally {
             c.close();
-            DatabaseManager.getInstance().closeDatabase();
+            //DatabaseManager.getInstance().closeDatabase();
             return project;
         }
     }
@@ -634,7 +634,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "WORKER QUERY EXCEPTION! " + e.getMessage());
         } finally {
             c.close();
-            DatabaseManager.getInstance().closeDatabase();
+            //DatabaseManager.getInstance().closeDatabase();
             return worker;
         }
     }

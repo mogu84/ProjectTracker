@@ -19,6 +19,7 @@ import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 import com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject;
+import com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,20 +110,21 @@ public class WorkerProjectListAdapter extends RecyclerView.Adapter<WorkerProject
         });
 
         // Attach a click listener to the text views for the UPDATE activity
+        /*
         holder.projectItemView.setOnClickListener(new WorkerProjectListAdapter.ProjectOnClickListener( current ) {
             @Override
             public void onClick(View v) {
                 // TODO: add an UPDATE activity here
-                /*
-                Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                */
+                //Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
+                //      .setAction("Action", null).show();
 
                 Intent intent = new Intent(mContext, AddOrUpdateProject.class);
                 intent.putExtra(Project.TABLE_NAME, current.toString());
+                intent.putExtra("EditOnly", true);
                 ((Activity)mContext).startActivityForResult(intent, 1);
             }
         });
+        */
     }
 
     @Override

@@ -28,7 +28,7 @@
         <activity
             android:name="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject"
             android:label="@string/title_activity_add_project"
-            android:parentActivityName="com.ville.devproc.projecttracker.ui.Project.Projects"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -55,7 +55,7 @@
         <activity
             android:name="com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers"
             android:label="@string/title_activity_edit_project_workers"
-            android:parentActivityName="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Project.Projects"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

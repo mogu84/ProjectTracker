@@ -3,6 +3,7 @@ package com.ville.devproc.projecttracker.ui.Project;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -40,7 +42,7 @@ public class AddOrUpdateProject extends AppCompatActivity {
     private Calendar mStartDate;
     private Calendar mEndDate;
     private DBHelper mDbHelper;
-    private Button pAddWorkersButton;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +52,7 @@ public class AddOrUpdateProject extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        pAddWorkersButton = findViewById(R.id.pAddWorkersButton);
-
+        mContext = this;
         mDbHelper = new DBHelper(getApplicationContext());
 
         Intent intent = getIntent();        // Intent to get EXTRA data for UPDATE functionality
@@ -60,7 +61,8 @@ public class AddOrUpdateProject extends AppCompatActivity {
 
         // In update set data from existing values
         if( isUpdateProject ) {
-            pAddWorkersButton.setVisibility(View.VISIBLE);
+            // avoid automatically appear android keyboard when activity start
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
             getSupportActionBar().setTitle(getString(R.string.title_activity_update_project));
             mProjectName = findViewById(R.id.pName_view);
@@ -68,12 +70,23 @@ public class AddOrUpdateProject extends AppCompatActivity {
             mProjectLocation = findViewById(R.id.pLocation_view);
 
             selectedProject = new Project(intent.getStringExtra(Project.TABLE_NAME));
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent backIntent = new Intent(mContext, EditProjectWorkers.class);
+                    backIntent.putExtra(Project.TABLE_NAME, selectedProject.toString());
+                    setResult(1, backIntent);
+                    finish();
+                }
+            });
 
             mProjectName.setText(selectedProject.getName());
             mProjectDescription.setText(selectedProject.getDescription());
             mProjectLocation.setText(selectedProject.getLocation());
         } else {
-            pAddWorkersButton.setVisibility(View.INVISIBLE);
+            // automatic popping up keyboard on start Activity
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
             selectedProject = new Project();
         }
 
@@ -136,7 +149,6 @@ public class AddOrUpdateProject extends AppCompatActivity {
         Boolean isSubmitAllowed = false;
         String myFormat = "dd.MM.yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("fi", "FI"));
-        Button btn = findViewById(R.id.pAddButton);
 
         String projectName = ((EditText) findViewById(R.id.pName_view)).getText().toString();
         if (!projectName.isEmpty() && !projectName.trim().isEmpty()) {
@@ -180,6 +192,9 @@ public class AddOrUpdateProject extends AppCompatActivity {
             else
                 mDbHelper.createProject(selectedProject);
 
+            Intent intent = new Intent(this, EditProjectWorkers.class);
+            intent.putExtra(Project.TABLE_NAME, selectedProject.toString());
+            setResult(1, intent);
             finish();
             /*// Return back to Projects view and reset activity back stack
             Intent projectsIntent = new Intent(this, Projects.class );;

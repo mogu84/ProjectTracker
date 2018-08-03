@@ -1,11 +1,15 @@
 package com.ville.devproc.projecttracker.ui.ProjectWorker;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.TimingLogger;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -14,6 +18,12 @@ import android.widget.TextView;
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
+import com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class EditProjectWorkers extends AppCompatActivity {
     private Project selectedProject;
@@ -59,34 +69,75 @@ public class EditProjectWorkers extends AppCompatActivity {
         Intent intent = getIntent();
         if( intent.hasExtra(Project.TABLE_NAME) ) {
             selectedProject = new Project(intent.getStringExtra( Project.TABLE_NAME) );
-            projectName.setText( selectedProject.getName() );
-            projectDescription.setText( selectedProject.getDescription() );
-            projectLocation.setText( selectedProject.getLocation() );
-            projectStartDate.setText( String.valueOf( selectedProject.getStartDate() ) );   // TODO: convert long to date
-            projectEndDate.setText( String.valueOf( selectedProject.getEndDate() ) );   // TODO: convert long to date
+            refreshProject();
+
+            mDbHelper = new DBHelper(getApplicationContext());
+
+
+            // Create an adapter and supply the data to be displayed.
+            mAdapter = new ProjectWorkerListAdapter(this, mDbHelper, selectedProject.getId());
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            // bind select all functionality to listener and handle required functions
+            mSelectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mAdapter.checkAllItems(isChecked);
+                }
+            });
         }
-
-        mDbHelper = new DBHelper(getApplicationContext());
-
-        // Create an adapter and supply the data to be displayed.
-        mAdapter = new ProjectWorkerListAdapter(this, mDbHelper, selectedProject.getId());
-        // Connect the adapter with the RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // bind select all functionality to listener and handle required functions
-        mSelectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mAdapter.checkAllItems(isChecked);
-            }
-        });
-
     }
 
     public void deleteSelectedWorkers(View view) {
         mAdapter.deleteCheckedWorkers();
     }
 
+    private void refreshProject() {
+        Calendar cal = Calendar.getInstance();
+        String myFormat = "dd.MM.yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("fi", "FI"));
+
+        projectName.setText( selectedProject.getName() );
+        projectDescription.setText( selectedProject.getDescription() );
+        projectLocation.setText( selectedProject.getLocation() );
+
+        cal.setTimeInMillis(selectedProject.getStartDate());
+        projectStartDate.setText( sdf.format(cal.getTime()) );
+        cal.setTimeInMillis(selectedProject.getEndDate());
+        projectEndDate.setText( sdf.format(cal.getTime()) );
+    }
+
+    public void editProject(View view) {
+        Intent intent = new Intent(this, AddOrUpdateProject.class);
+        intent.putExtra(Project.TABLE_NAME, selectedProject.toString());
+        startActivityForResult(intent, 1);
+    }
+
+    public void assignWorkers(View view) {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch( resultCode ) {
+            case Activity.RESULT_CANCELED:
+                break;
+            case Activity.RESULT_OK:
+                if( data.hasExtra(Project.TABLE_NAME)) {
+                    selectedProject = new Project(data.getStringExtra(Project.TABLE_NAME));
+                    refreshProject();
+                }
+                break;
+            case Activity.RESULT_FIRST_USER:
+                if( data.hasExtra(Project.TABLE_NAME)) {
+                    selectedProject = new Project(data.getStringExtra(Project.TABLE_NAME));
+                    refreshProject();
+                }
+            default:
+                break;
+        }
+    }
 }

@@ -75,7 +75,6 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
     public void onBindViewHolder(@NonNull WorkerViewHolder holder, int position) {
         final Worker current = mDB.queryWorker(position);
         final int mAdapterPos = holder.getAdapterPosition();
-        final int mPosition = holder.getLayoutPosition();
 
         holder.workerItemView.setText(current.getName());
         holder.bind(mAdapterPos);

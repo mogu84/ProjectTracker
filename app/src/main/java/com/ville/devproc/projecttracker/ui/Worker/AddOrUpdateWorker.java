@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -34,7 +35,6 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
     private ConstraintLayout mWorkerProjects;
     private RecyclerView mRecyclerView;
     private WorkerProjectListAdapter mAdapter;
-    private CheckBox mSelectCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,9 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
 
         // In update set data from existing values
         if( isUpdateWorker ) {
+            // avoid automatically appear android keyboard when activity start
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
             mAssignWorker.setVisibility(View.VISIBLE);
             mWorkerProjects.setVisibility(View.VISIBLE);
 
@@ -75,6 +78,9 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         } else {
+            // automatic popping up keyboard on start Activity
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
             mAssignWorker.setVisibility(View.INVISIBLE);
             mWorkerProjects.setVisibility(View.INVISIBLE);
             selectedWorker = new Worker();
