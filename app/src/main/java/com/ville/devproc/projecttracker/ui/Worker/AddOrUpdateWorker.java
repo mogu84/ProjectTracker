@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.ville.devproc.prTracker.R;
@@ -31,6 +32,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
     private Worker selectedWorker;
     private EditText mWorkerName;
     private DBHelper mDbHelper;
+    private CheckBox mSelectCheckBox;
 
     private ConstraintLayout mWorkerProjects;
     private RecyclerView mRecyclerView;
@@ -46,6 +48,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
 
         mDbHelper = new DBHelper(getApplicationContext());
 
+        mSelectCheckBox = findViewById(R.id.workerSelectCheckBox);
         mWorkerName = findViewById(R.id.wName_view);
         mWorkerProjects = findViewById(R.id.workerProjectsList);
 
@@ -76,6 +79,14 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
             mRecyclerView.setAdapter(mAdapter);
             // Give the RecyclerView a default layout manager.
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            // bind select all functionality to listener and handle required functions
+            mSelectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mAdapter.checkAllItems(isChecked);
+                }
+            });
 
         } else {
             // automatic popping up keyboard on start Activity
@@ -137,7 +148,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
         Bundle args = new Bundle();
         args.putInt(Worker.COLUMN_WORKER_ID, selectedWorker.getId());
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), "abc");
+        dialog.show(getFragmentManager(), "WorkerProjects");
     }
 
     public void deleteSelectedProjects(View view) {
@@ -147,7 +158,6 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
     @Override
     public void onDismiss(DialogInterface dialog) {
         // Fragment dialog had been dismissed
-        Log.v(this.getClass().getName(), "DialogFragment Dismissed");
         mAdapter.notifyDataSetChanged();
     }
 

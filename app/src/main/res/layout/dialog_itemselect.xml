@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/dSelectProjectListView"
+        android:id="@+id/dSelectListView"
         android:layout_width="0dp"
         android:layout_height="300dp"
         android:layout_marginEnd="8dp"

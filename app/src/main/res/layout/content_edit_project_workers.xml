@@ -145,7 +145,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:inputType="textCapWords"
-        android:onClick="assignWorkers"
+        android:onClick="assignProjectWorkers"
         android:text="Assign workers"
         app:layout_constraintBottom_toTopOf="@+id/projectWorkerLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"

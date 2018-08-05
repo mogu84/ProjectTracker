@@ -1,4 +1,4 @@
-package com.ville.devproc.projecttracker.ui.Worker;
+package com.ville.devproc.projecttracker.ui.Project;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,8 +19,8 @@ import com.ville.devproc.projecttracker.data.db.model.Worker;
 
 import java.util.List;
 
-public class SelectProjectDialogFragment extends DialogFragment {
-    private SelectProjectListViewAdapter adapter;
+public class SelectWorkerDialogFragment extends DialogFragment {
+    private SelectWorkerListViewAdapter adapter;
     private DBHelper mDbHelper;
     private Bundle mArgs;
 
@@ -29,10 +29,12 @@ public class SelectProjectDialogFragment extends DialogFragment {
         mArgs = getArguments();
 
         mDbHelper = new DBHelper(getActivity().getApplicationContext());
-        List<Project> projects = mDbHelper.getAllUnassignedProjects(mArgs.getInt(Worker.COLUMN_WORKER_ID));
+        List<Worker> workers = mDbHelper.getAllUnassignedWorkers(mArgs.getInt(Project.COLUMN_PROJECT_ID));
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_itemselect, null);
+
         final EditText filterText = v.findViewById(R.id.pFilterByName);
+        filterText.setHint("Filter worker names");
         ListView listView = v.findViewById(R.id.dSelectListView);
 
         filterText.addTextChangedListener(new TextWatcher() {
@@ -52,12 +54,12 @@ public class SelectProjectDialogFragment extends DialogFragment {
             }
         });
 
-        adapter = new SelectProjectListViewAdapter( getActivity().getApplicationContext(), projects, mDbHelper, mArgs ) ;
+        adapter = new SelectWorkerListViewAdapter( getActivity().getApplicationContext(), workers, mDbHelper, mArgs ) ;
 
         listView.setAdapter(adapter);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Select project").setView(v);
+        builder.setTitle("Select worker").setView(v);
 
         // Create the AlertDialog object and return it
         return builder.create();

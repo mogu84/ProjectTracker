@@ -29,7 +29,10 @@
         android:layout_marginRight="18dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
+        android:background="#f2f7ff"
         android:orientation="vertical"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
         app:layout_constraintBottom_toTopOf="@+id/workerDeleteButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,9 +44,6 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:background="#f2f7ff"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
             app:layout_constraintTop_toBottomOf="@+id/workerSelectAll">
 
         </android.support.v7.widget.RecyclerView>

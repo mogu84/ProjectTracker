@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/projectName"
+        android:id="@+id/workerName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"

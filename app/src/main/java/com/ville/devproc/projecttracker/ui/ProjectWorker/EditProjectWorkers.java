@@ -1,6 +1,8 @@
 package com.ville.devproc.projecttracker.ui.ProjectWorker;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -18,14 +21,17 @@ import android.widget.TextView;
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
+import com.ville.devproc.projecttracker.data.db.model.Worker;
 import com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject;
+import com.ville.devproc.projecttracker.ui.Project.SelectWorkerDialogFragment;
+import com.ville.devproc.projecttracker.ui.Worker.SelectProjectDialogFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class EditProjectWorkers extends AppCompatActivity {
+public class EditProjectWorkers extends AppCompatActivity implements DialogInterface.OnDismissListener {
     private Project selectedProject;
     private TextView projectName;
     private TextView projectDescription;
@@ -93,6 +99,7 @@ public class EditProjectWorkers extends AppCompatActivity {
 
     public void deleteSelectedWorkers(View view) {
         mAdapter.deleteCheckedWorkers();
+        mSelectCheckBox.setChecked(false);
     }
 
     private void refreshProject() {
@@ -116,8 +123,18 @@ public class EditProjectWorkers extends AppCompatActivity {
         startActivityForResult(intent, 1);
     }
 
-    public void assignWorkers(View view) {
+    public void assignProjectWorkers(View view) {
+        DialogFragment dialog = new SelectWorkerDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt(Project.COLUMN_PROJECT_ID, selectedProject.getId());
+        dialog.setArguments(args);
+        dialog.show(getFragmentManager(), "ProjectWorkers");
+    }
 
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        // Fragment dialog had been dismissed
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

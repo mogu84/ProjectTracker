@@ -419,6 +419,37 @@ public class DBHelper extends SQLiteOpenHelper {
             return workers;
         }
     }
+    /**Get all projects where worker is not yet assigned */
+    public List<Worker> getAllUnassignedWorkers(long projectId) {
+        List<Worker> workers = new ArrayList<>();
+        String selectWorkerExistingProjectsQuery = "SELECT " + ProjectWorker.COLUMN_WORKER_ID + " FROM " + ProjectWorker.TABLE_NAME + " WHERE " + ProjectWorker.COLUMN_PROJECT_ID + " = " + projectId;
+        String selectQuery = "SELECT * FROM " + Worker.TABLE_NAME + " WHERE " + Worker.COLUMN_WORKER_ID + " NOT IN (" + selectWorkerExistingProjectsQuery + ")";
+
+        //Log.e(LOG, selectQuery);
+
+        try {
+            DatabaseManager.initializeInstance(this);
+            SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+            Cursor c = db.rawQuery(selectQuery, null);
+
+            // looping through all rows and adding to list
+            if (c.moveToFirst()) {
+                do {
+                    Worker worker = new Worker();
+                    worker.setId(c.getInt(c.getColumnIndex(Worker.COLUMN_WORKER_ID)));
+                    worker.setName(c.getString(c.getColumnIndex(Worker.COLUMN_NAME)));
+
+                    // adding to projects list
+                    workers.add(worker);
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("getAllUnassignedWorkers", e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return workers;
+        }
+    }
     /** Query Workers*/
     public Worker queryWorker(int position) {
         DatabaseManager.initializeInstance(this);
@@ -683,7 +714,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 Project project = new Project();
-                project.setId(c.getColumnIndex(Project.COLUMN_PROJECT_ID));
+                project.setId(c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ));
                 project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME)) );
                 project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
                 project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
