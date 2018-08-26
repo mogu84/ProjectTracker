@@ -7,4 +7,6 @@
     <string name="title_activity_add_worker">Add Worker</string>
     <string name="title_activity_update_worker">Update Worker</string>
     <string name="title_activity_edit_project_workers">Edit Project Workers</string>
+    <string name="title_activity_list_projects">ListProjects</string>
+    <string name="title_activity_add_timesheet">AddTimesheet</string>
 </resources>

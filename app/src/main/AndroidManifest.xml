@@ -61,6 +61,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject" />
         </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects"
+            android:label="@string/title_activity_list_projects"
+            android:parentActivityName="com.ville.devproc.projecttracker.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheet"
+            android:label="@string/title_activity_add_timesheet"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects" />
+        </activity>
     </application>
 
 </manifest>

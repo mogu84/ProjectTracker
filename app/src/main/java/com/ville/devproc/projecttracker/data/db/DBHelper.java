@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -560,8 +561,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     // ----------------- ProjectWorker CRUD methods ----------------- //
     /** Create single ProjectWorker */
     public long createProjectWorker(int projectId, int workerId) {
@@ -896,6 +895,119 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // ------------------ Timesheet CRUD methods -------------------- //
+    /** Query ProjectWorker Projects*/
+    public Project queryTimesheetProject(int position) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+
+        // TODO: Device a SQL query here which will look for Project which have workers assigned into them.
+        String selectQuery = "SELECT * FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID +
+                " IN (SELECT DISTINCT(" + ProjectWorker.COLUMN_PROJECT_ID +") FROM " + ProjectWorker.TABLE_NAME + " ORDER BY " + ProjectWorker.COLUMN_PROJECT_ID + " ASC LIMIT " + position + ",1)";
+
+        Cursor c = null;
+        Project project = new Project();
+        try {
+            c = db.rawQuery(selectQuery, null);
+
+            if(c != null)
+                c.moveToFirst();
+
+            project.setId( c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ));
+            project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME) ) );
+            project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
+            project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
+            project.setInputDate( c.getLong( c.getColumnIndex(Project.COLUMN_INPUT_DATE)) );
+            project.setStartDate( c.getLong( c.getColumnIndex(Project.COLUMN_START_DATE)) );
+            project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
+
+            c.close();
+        } catch(Exception e) {
+            Log.e(LOG, "QUERY WORKER EXCEPTION! " + e.getMessage());
+        } finally {
+            //DatabaseManager.getInstance().closeDatabase();
+            return project;
+        }
+    }
+    /** Query Timesheet worker rows or create empty Timesheet out from ProjectWorker rows*/
+    public Timesheet queryTimesheetProject(int projectId, long date, int position) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+
+        // If selectTimesheetQuery count <= 0, then do selectProjectWorkerQuery and generate empty timesheet from those.
+        String selectTimesheetQuery = "SELECT ts.*, p.name AS pname, w.name AS wname " +
+                "FROM " + Timesheet.TABLE_NAME + " ts, " + Project.TABLE_NAME + " p, " + Worker.TABLE_NAME + " w" +
+                " WHERE ts.project_id = " + projectId +
+                    " AND ts.input_date = " + date +
+                    " AND ts.project_id = p.project_id" +
+                    " AND ts.worker_id = w.worker_id" +
+                " ORDER BY ts.worker_id" +
+                " ASC LIMIT " + position + ",1";
+
+        String selectProjectWorkerQuery = "SELECT pw.project_id, p.name AS pname, pw.worker_id, w.name AS wname " +
+                "FROM " + ProjectWorker.TABLE_NAME + " pw, " + Project.TABLE_NAME + " p, " + Worker.TABLE_NAME + " w " +
+                "WHERE pw.project_id = " + projectId + " AND pw.project_id = p.project_id AND pw.worker_id = w.worker_id " +
+                "ORDER BY pw.worker_id " +
+                "ASC LIMIT " + position + ",1";
+
+        Cursor c = null;
+        Timesheet timesheet = new Timesheet();
+        try {
+            c = db.rawQuery(selectTimesheetQuery, null);
+            if(c != null)
+                c.moveToFirst();
+
+            if( c.getCount() > 0 ) {
+                timesheet.setTimesheetId(c.getInt(c.getColumnIndex(Timesheet.COLUMN_TIMESHEET_ID)));
+                timesheet.setProjectId(c.getInt(c.getColumnIndex(Timesheet.COLUMN_PROJECT_ID)));
+                timesheet.setProjectName(c.getString(c.getColumnIndex("pname")));
+                timesheet.setWorkerId(c.getInt(c.getColumnIndex(Timesheet.COLUMN_WORKER_ID)));
+                timesheet.setWorkerName(c.getString(c.getColumnIndex("wname")));
+                timesheet.setInputDate(c.getLong(c.getColumnIndex(Timesheet.COLUMN_INPUT_DATE)));
+                timesheet.setDuration(c.getLong(c.getColumnIndex(Timesheet.COLUMN_DURATION)));
+            } else {
+                c.close();
+                c = db.rawQuery(selectProjectWorkerQuery, null);
+
+                if( c != null)
+                    c.moveToFirst();
+
+                timesheet.setProjectId( c.getInt( c.getColumnIndex(ProjectWorker.COLUMN_PROJECT_ID) ) );
+                timesheet.setProjectName( c.getString( c.getColumnIndex("pname") ) );
+                timesheet.setWorkerId( c.getInt( c.getColumnIndex(ProjectWorker.COLUMN_WORKER_ID) ) );
+                timesheet.setWorkerName( c.getString( c.getColumnIndex( "wname" ) ) ) ;
+                timesheet.setDuration( 0L );
+                timesheet.setInputDate( date );
+            }
+
+            c.close();
+        } catch(Exception e) {
+            Log.e(LOG, "QUERY WORKER EXCEPTION! " + e.getMessage());
+        } finally {
+            //DatabaseManager.getInstance().closeDatabase();
+            return timesheet;
+        }
+    }
+    /** Get Project count */
+    public long getTimesheetProjectCount() {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        long count = 0;
+        String countQuery = "SELECT COUNT(DISTINCT " + ProjectWorker.COLUMN_PROJECT_ID + ") FROM " + ProjectWorker.TABLE_NAME;
+
+        try {
+            SQLiteStatement statement = db.compileStatement(countQuery);
+            count = statement.simpleQueryForLong();
+        } catch (Exception e) {
+            Log.e(LOG, "Project COUNT Exception! " + e.getMessage() );
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            // return count
+            return count;
+        }
+    }
     /** Create single Timesheet */
     public long createTimesheet(Timesheet timesheet) {
         DatabaseManager.initializeInstance(this);

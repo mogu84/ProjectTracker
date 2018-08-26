@@ -38,16 +38,32 @@
         app:layout_constraintTop_toBottomOf="@+id/projects_button" />
 
     <Button
-        android:id="@+id/timesheets_button"
+        android:id="@+id/addTimesheets_button"
         android:layout_width="201dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Timesheets"
+        android:onClick="launchAddTimesheets"
+        android:text="Add Timesheets"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/workers_button" />
+
+    <Button
+        android:id="@+id/viewTimesheets_button"
+        android:layout_width="201dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="launchTestActivity"
+        android:text="View Timesheets"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addTimesheets_button" />
 
 </android.support.constraint.ConstraintLayout>
