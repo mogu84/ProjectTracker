@@ -1,5 +1,6 @@
 package com.ville.devproc.projecttracker.ui.Timesheet;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,25 +9,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
+import com.ville.devproc.projecttracker.ui.Project.DatePickerFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AddTimesheet extends AppCompatActivity {
-    private Project selectedProject;
-    private TextView projectNameTextView;
-    private TextView projectTimesheetDate;
+public class AddTimesheet extends AppCompatActivity implements AddTimesheetDatePickerFragment.DatePickerDialogListener {
+    private Project mSelectedProject;
+    private TextView mProjectNameTextView;
+    private TextView mProjectTimesheetDate;
     private RecyclerView mRecyclerView;
     private DBHelper mDbHelper;
-    private Calendar calendar;
+    private Calendar mCalendar;
     private AddProjectTimesheetListAdapter mAdapter;
 
     @Override
@@ -44,32 +49,60 @@ public class AddTimesheet extends AppCompatActivity {
             finish();
         }
 
-        projectNameTextView = findViewById(R.id.add_timesheet_projectname);
-        projectTimesheetDate = findViewById(R.id.add_timesheet_date);
+        mProjectNameTextView = findViewById(R.id.add_timesheet_projectname);
+        mProjectTimesheetDate = findViewById(R.id.add_timesheet_date);
+        mProjectTimesheetDate.setOnClickListener(dateListener);
         mRecyclerView = findViewById(R.id.add_timesheet_recyclerView);
         mDbHelper = new DBHelper(getApplicationContext());
 
+        // avoid automatically appear android keyboard when activity start
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         // display project name
-        selectedProject = new Project(intent.getStringExtra(Project.TABLE_NAME));
-        projectNameTextView.setText(selectedProject.getName());
+        mSelectedProject = new Project(intent.getStringExtra(Project.TABLE_NAME));
+        mProjectNameTextView.setText(mSelectedProject.getName());
 
-        calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
+        mCalendar = Calendar.getInstance();
+        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        mCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        mCalendar.set(Calendar.MINUTE, 0);
+        mCalendar.set(Calendar.SECOND, 0);
+        mCalendar.set(Calendar.MILLISECOND, 0);
+        mCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("fi", "FI"));
-        projectTimesheetDate.setText(sdf.format(calendar.getTime()));
+        mProjectTimesheetDate.setText(sdf.format(mCalendar.getTime()));
 
-        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        mAdapter = new AddProjectTimesheetListAdapter(this, mDbHelper, selectedProject.getId(), calendar.getTimeInMillis() );
+        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        mAdapter = new AddProjectTimesheetListAdapter(this, mDbHelper, mSelectedProject.getId(), mCalendar.getTimeInMillis() );
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-
-
     }
 
+    View.OnClickListener dateListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DialogFragment newDateFragment = new AddTimesheetDatePickerFragment();
+            newDateFragment.show(getFragmentManager(), "AddTimesheetDatePicker");
+        }
+    };
+
+    @Override
+    public void onFinishDatePickerDialogListener(String inputText) {
+        mCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
+        mCalendar.setTimeInMillis( Long.parseLong(inputText) );
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("fi", "FI"));
+
+        mProjectTimesheetDate.setText(sdf.format(mCalendar.getTime()));
+
+        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        mAdapter.updateDate(mCalendar.getTimeInMillis());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void submitTimesheets(View v) {
+        v.setFocusable(true);
+        v.setFocusableInTouchMode(true);
+        v.requestFocus();
+        boolean result = mAdapter.saveTimesheetHours();
+    }
 }

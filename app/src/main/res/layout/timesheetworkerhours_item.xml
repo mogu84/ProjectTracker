@@ -8,6 +8,7 @@
     android:layout_marginTop="2dp"
     android:background="@android:color/background_light"
     android:orientation="horizontal"
+    android:focusableInTouchMode="true"
     android:paddingBottom="2dp"
     android:paddingTop="2dp">
 
@@ -29,6 +30,8 @@
         android:ems="10"
         android:gravity="center"
         android:inputType="numberDecimal"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:text="10,25"
         android:textSize="24sp" />
 </LinearLayout>
