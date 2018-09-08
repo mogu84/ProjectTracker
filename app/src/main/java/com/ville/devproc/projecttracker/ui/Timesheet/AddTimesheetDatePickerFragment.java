@@ -13,14 +13,26 @@ import java.util.TimeZone;
 public class AddTimesheetDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     private DatePickerDialogListener mListener;
+    private Calendar mDate;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        Bundle bundle = getArguments();
         // Use the current date as the default date in the picker
-        final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        mDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+        if( bundle.containsKey("date")) {
+            try {
+                mDate.setTimeInMillis(bundle.getLong("date"));
+            } catch (Exception e) {
+
+            }
+        }
+
+        int year = mDate.get(Calendar.YEAR);
+        int month = mDate.get(Calendar.MONTH);
+        int day = mDate.get(Calendar.DAY_OF_MONTH);
 
         return new DatePickerDialog(getActivity(),this, year, month, day);
     }

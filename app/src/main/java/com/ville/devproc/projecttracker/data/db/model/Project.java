@@ -24,6 +24,7 @@ public class Project {
     private long input_date;
     private long start_date;
     private long end_date;
+    private Long projectSumDuration = 0L;
 
     public static final String CREATE_TABLE = "" +
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -108,6 +109,14 @@ public class Project {
 
     public void setEndDate(long end_date) {
         this.end_date = end_date;
+    }
+
+    public long getProjectSumDuration() {
+        return this.projectSumDuration;
+    }
+
+    public void setProjectSumDuration(long projectSum) {
+        this.projectSumDuration = projectSum;
     }
 
     public String toString() {

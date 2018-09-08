@@ -7,7 +7,8 @@ import android.view.View;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.ui.Project.Projects;
-import com.ville.devproc.projecttracker.ui.Timesheet.ListProjects;
+import com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheetListProjects;
+import com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjects;
 import com.ville.devproc.projecttracker.ui.Worker.Workers;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchAddTimesheets(View view) {
-        Intent intent = new Intent(this, ListProjects.class);
+        Intent intent = new Intent(this, AddTimesheetListProjects.class);
+        startActivity(intent);
+    }
+
+    public void launchViewTimesheets(View view) {
+        Intent intent = new Intent(this, ViewTimesheetListProjects.class);
         startActivity(intent);
     }
 

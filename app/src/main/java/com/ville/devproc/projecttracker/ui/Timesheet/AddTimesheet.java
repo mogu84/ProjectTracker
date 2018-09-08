@@ -82,6 +82,9 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
         @Override
         public void onClick(View v) {
             DialogFragment newDateFragment = new AddTimesheetDatePickerFragment();
+            Bundle bundle = new Bundle();
+            bundle.putLong("date", mCalendar.getTimeInMillis());
+            newDateFragment.setArguments(bundle);
             newDateFragment.show(getFragmentManager(), "AddTimesheetDatePicker");
         }
     };

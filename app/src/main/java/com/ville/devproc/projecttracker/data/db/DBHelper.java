@@ -900,7 +900,6 @@ public class DBHelper extends SQLiteOpenHelper {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-
         // TODO: Device a SQL query here which will look for Project which have workers assigned into them.
         String selectQuery = "SELECT * FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID +
                 " IN (SELECT DISTINCT(" + ProjectWorker.COLUMN_PROJECT_ID +") FROM " + ProjectWorker.TABLE_NAME + " ORDER BY " + ProjectWorker.COLUMN_PROJECT_ID + " ASC LIMIT " + position + ",1)";
@@ -1127,5 +1126,61 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_TIMESHEET_ID + " = ?",
                 new String[] { String.valueOf(timesheetId) });
+    }
+    /** Query ProjectWorker Projects with timesheet duration */
+    public Project queryTimesheetProjectWithDuration(int position) {
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        /*
+        String selectQuery = "SELECT pr.*, SUM(ts.duration) as projectSum FROM " + Project.TABLE_NAME + " pr, " + Timesheet.TABLE_NAME + " ts " +
+                "WHERE " +
+                "pr." + Project.COLUMN_PROJECT_ID + " IN " +
+                "(SELECT DISTINCT( pw." + ProjectWorker.COLUMN_PROJECT_ID + " ) FROM " + ProjectWorker.TABLE_NAME + " pw ORDER BY pw." + ProjectWorker.COLUMN_PROJECT_ID + " ASC LIMIT " + position + ",1)" +
+                "AND " +
+                "ts." + Timesheet.COLUMN_PROJECT_ID + " IN " +
+                "(SELECT DISTINCT( pw." + ProjectWorker.COLUMN_PROJECT_ID + " ) FROM " + ProjectWorker.TABLE_NAME + " pw ORDER BY pw." + ProjectWorker.COLUMN_PROJECT_ID + " ASC LIMIT " + position + ",1)";
+        */
+        String selectQuery = "SELECT * FROM ("+
+	        "(SELECT pr.* "+
+            "FROM " + Project.TABLE_NAME + " pr "+
+            "WHERE pr." + Project.COLUMN_PROJECT_ID + " IN "+
+                "(SELECT DISTINCT( pw." + ProjectWorker.COLUMN_PROJECT_ID + " ) "+
+                "FROM " + ProjectWorker.TABLE_NAME + " pw "+
+                "ORDER BY pw." + ProjectWorker.COLUMN_PROJECT_ID + " "+
+                "ASC LIMIT " + position + ",1)) AS project, "+
+            "(SELECT IFNULL(SUM(ts.duration), 0) as projectSum "+
+            "FROM " + Timesheet.TABLE_NAME + " ts "+
+            "WHERE ts." + Timesheet.COLUMN_PROJECT_ID + " IN "+
+                "(SELECT DISTINCT( pw." + ProjectWorker.COLUMN_PROJECT_ID + " ) "+
+                "FROM " + ProjectWorker.TABLE_NAME + " pw "+
+                "ORDER BY pw." + ProjectWorker.COLUMN_PROJECT_ID + " "+
+                "ASC LIMIT " + position + ",1)) AS timesheet"+
+            ")";
+
+        Cursor c = null;
+        Project project = new Project();
+        try {
+            c = db.rawQuery(selectQuery, null);
+
+            if(c != null)
+                c.moveToFirst();
+
+            project.setId( c.getInt( c.getColumnIndex(Project.COLUMN_PROJECT_ID) ));
+            project.setName( c.getString( c.getColumnIndex(Project.COLUMN_NAME) ) );
+            project.setDescription( c.getString( c.getColumnIndex(Project.COLUMN_DESCRIPTION)) );
+            project.setLocation( c.getString( c.getColumnIndex(Project.COLUMN_LOCATION)) );
+            project.setInputDate( c.getLong( c.getColumnIndex(Project.COLUMN_INPUT_DATE)) );
+            project.setStartDate( c.getLong( c.getColumnIndex(Project.COLUMN_START_DATE)) );
+            project.setEndDate( c.getLong( c.getColumnIndex(Project.COLUMN_END_DATE)) );
+            project.setProjectSumDuration( c.getLong( c.getColumnIndex("projectSum")));
+
+            c.close();
+        } catch(Exception e) {
+            Log.e(LOG, "QUERY WORKER EXCEPTION! " + e.getMessage());
+        } finally {
+            //DatabaseManager.getInstance().closeDatabase();
+            return project;
+        }
     }
 }

@@ -62,7 +62,7 @@
                 android:value="com.ville.devproc.projecttracker.ui.Project.AddOrUpdateProject" />
         </activity>
         <activity
-            android:name="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects"
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheetListProjects"
             android:label="@string/title_activity_list_projects"
             android:parentActivityName="com.ville.devproc.projecttracker.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -73,11 +73,20 @@
         <activity
             android:name="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheet"
             android:label="@string/title_activity_add_timesheet"
-            android:parentActivityName="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheetListProjects"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ville.devproc.projecttracker.ui.Timesheet.ListProjects" />
+                android:value="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheetListProjects" />
+        </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjects"
+            android:label="@string/title_activity_list_projects"
+            android:parentActivityName="com.ville.devproc.projecttracker.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.MainActivity" />
         </activity>
     </application>
 

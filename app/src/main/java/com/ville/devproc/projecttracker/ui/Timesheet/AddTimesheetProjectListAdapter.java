@@ -4,26 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
-import com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class TimesheetProjectListAdapter extends RecyclerView.Adapter<TimesheetProjectListAdapter.ProjectViewHolder> {
+public class AddTimesheetProjectListAdapter extends RecyclerView.Adapter<AddTimesheetProjectListAdapter.ProjectViewHolder> {
 
     /**
      *  Custom view holder with a textview and a checkbox.
@@ -47,7 +38,7 @@ public class TimesheetProjectListAdapter extends RecyclerView.Adapter<TimesheetP
     private View rootView;
 
 
-    public TimesheetProjectListAdapter(Context context, DBHelper db) {
+    public AddTimesheetProjectListAdapter(Context context, DBHelper db) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mDB = db;
@@ -55,17 +46,15 @@ public class TimesheetProjectListAdapter extends RecyclerView.Adapter<TimesheetP
     }
 
     @Override
-    public TimesheetProjectListAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AddTimesheetProjectListAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.timesheetprojectlist_item, parent, false);
         return new ProjectViewHolder(mItemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TimesheetProjectListAdapter.ProjectViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull AddTimesheetProjectListAdapter.ProjectViewHolder holder, final int position) {
 
         final Project current = mDB.queryTimesheetProject(position);
-        //final int mAdapterPos = holder.getAdapterPosition();
-        //holder.bind(mAdapterPos);
 
         holder.projectItemView.setText(current.getName());
 
