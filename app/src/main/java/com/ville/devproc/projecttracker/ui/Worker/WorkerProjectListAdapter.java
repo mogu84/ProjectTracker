@@ -110,11 +110,10 @@ public class WorkerProjectListAdapter extends RecyclerView.Adapter<WorkerProject
         });
 
         // Attach a click listener to the text views for the UPDATE activity
-        /*
+        /* REMOVED TO PREVENT INNERLOOPING FROM WORKER TO PROJECT TO WORKER TO PROJECT...
         holder.projectItemView.setOnClickListener(new WorkerProjectListAdapter.ProjectOnClickListener( current ) {
             @Override
             public void onClick(View v) {
-                // TODO: add an UPDATE activity here
                 //Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
                 //      .setAction("Action", null).show();
 

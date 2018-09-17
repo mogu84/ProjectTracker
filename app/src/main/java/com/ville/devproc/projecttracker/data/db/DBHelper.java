@@ -806,7 +806,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return updateResult == 1;
     }
     /** Delete project */
-    public int deleteAllProjectWorker(List<Integer> projectIds) {
+    public boolean deleteAllProjectWorker(List<Integer> projectIds) {
         Collections.sort(projectIds);
         String idList = TextUtils.join(",", projectIds);
 
@@ -820,11 +820,11 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "PROJECT_WORKERS DELETE EXCEPTION " + e.getMessage());
         } finally {
             DatabaseManager.getInstance().closeDatabase();
-            return results;
+            return results == projectIds.size();
         }
     }
     /** Delete all ProjectWorker rows from specific workerIds */
-    public int deleteAllProjectWorkers(List<Integer> workerIds) {
+    public boolean deleteAllProjectWorkers(List<Integer> workerIds) {
         Collections.sort(workerIds);
         String idList = TextUtils.join(",", workerIds);
 
@@ -841,7 +841,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e(LOG, "PROJECT_WORKERS DELETE EXCEPTION " + e.getMessage());
         } finally {
             DatabaseManager.getInstance().closeDatabase();
-            return results;
+            return results == workerIds.size();
         }
     }
     /** Delete all ProjectWorker rows from specific workerId */
@@ -900,7 +900,6 @@ public class DBHelper extends SQLiteOpenHelper {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-        // TODO: Device a SQL query here which will look for Project which have workers assigned into them.
         String selectQuery = "SELECT * FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID +
                 " IN (SELECT DISTINCT(" + ProjectWorker.COLUMN_PROJECT_ID +") FROM " + ProjectWorker.TABLE_NAME + " ORDER BY " + ProjectWorker.COLUMN_PROJECT_ID + " ASC LIMIT " + position + ",1)";
 
@@ -1119,13 +1118,59 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return updateResult == 1;
     }
-    /** Delete project */
-    public void deleteTimesheet(long timesheetId) {
+    /** Delete selected timesheets */
+    public boolean deleteTimesheet(long timesheetId) {
+        boolean result = false;
+
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
-        db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_TIMESHEET_ID + " = ?",
-                new String[] { String.valueOf(timesheetId) });
+        try {
+            result = db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_TIMESHEET_ID + " = ?",
+                    new String[]{String.valueOf(timesheetId)}) == 1;
+        } catch( Exception e) {
+            result = false;
+        } finally {
+            return result;
+        }
+    }
+    /** Delete selected Projects timesheets */
+    public boolean deleteAllProjectTimesheets(List<Integer> projectIds) {
+        boolean result = false;
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        Collections.sort(projectIds);
+        String idList = TextUtils.join(",", projectIds);
+
+        try {
+            result = db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_PROJECT_ID + " IN ("+ idList +")", null) > 0;
+        } catch(Exception e) {
+            Log.e(LOG,"deleteAllProjectTimesheets| " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return result;
+        }
+    }
+    /** Delete selected Worker timesheets */
+    public boolean deleteAllWorkerTimesheets(List<Integer> workerIds) {
+        boolean result = false;
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        Collections.sort(workerIds);
+        String idList = TextUtils.join(",", workerIds);
+
+        Log.v(LOG, idList );
+
+        try {
+            result = db.delete(Timesheet.TABLE_NAME, Timesheet.COLUMN_WORKER_ID + " IN ("+ idList +")", null) > 0;
+        } catch(Exception e) {
+            Log.e(LOG,"deleteAllWorkerTimesheets| " + e.getMessage());
+        } finally {
+            DatabaseManager.getInstance().closeDatabase();
+            return result;
+        }
     }
     /** Query ProjectWorker Projects with timesheet duration */
     public Project queryTimesheetProjectWithDuration(int position) {

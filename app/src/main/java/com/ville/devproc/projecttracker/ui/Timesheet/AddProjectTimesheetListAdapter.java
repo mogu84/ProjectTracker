@@ -86,7 +86,8 @@ public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProj
                     double setValue = Double.parseDouble(h.mWorkerHour.getText().toString());
                     current.setDuration((long) (setValue * 60));
                     mTimesheetMap.put(current.getWorkerId(), current);
-                    Log.v("WorkerHOUR", current.getWorkerName() + ": " + current.toString());
+                    saveTimesheetHours();
+                    //Log.v("WorkerHOUR", current.getWorkerName() + ": " + current.toString());
                 }
 
                 //Snackbar.make(v, "View adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -122,7 +123,10 @@ public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProj
         try {
             for (Timesheet sheet : mTimesheetMap.values()) {
                 if (sheet.getTimesheetId() != 0) {
-                    mDB.updateTimesheet(sheet);     // ALWAYS UPDATE EXSISTING TIMESHEET
+                    if(sheet.getDuration() <= 0L)
+                        mDB.deleteTimesheet(sheet.getTimesheetId());    // DELETE NO DURATION TIMESHEET
+                    else
+                        mDB.updateTimesheet(sheet);     // UPDATE EXSISTING TIMESHEET DURATION
                 } else {
                     if (sheet.getDuration() > 0)
                         mDB.createTimesheet(sheet); // CREATE ONLY TIMESHEETS WITH DURATION

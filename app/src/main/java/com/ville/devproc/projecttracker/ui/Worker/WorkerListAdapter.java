@@ -107,7 +107,6 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
         holder.workerItemView.setOnClickListener(new WorkerOnClickListener( current ) {
             @Override
             public void onClick(View v) {
-                // TODO: add an UPDATE activity here
                 /*
                 Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -143,19 +142,22 @@ public class WorkerListAdapter extends RecyclerView.Adapter<WorkerListAdapter.Wo
 
         Boolean isDeleteSuccess = false;
         if(mCheckToWorkerMap.keySet().size() > 0) {
-            // TODO: Deletes only the selected Workers from the Timesheet table.
+            ArrayList<Integer> idList = new ArrayList<>(mCheckToWorkerMap.keySet());
 
-            // Deletes only the selected Workers from the ProjectWorker table.
-            mDB.deleteAllProjectWorkers( new ArrayList<>(mCheckToWorkerMap.keySet()));
+            // Delete only the selected Worker(s) from Timesheet table.
+            mDB.deleteAllWorkerTimesheets( idList );
 
-            // Deletes only the selected Worker from the Worker table.
-            isDeleteSuccess = mDB.deleteWorkers(new ArrayList<>(mCheckToWorkerMap.keySet()));
+            // Delete only the selected Worker(s) from ProjectWorker table.
+            mDB.deleteAllProjectWorkers( idList );
+
+            // Delete only the selected Worker(s) from Worker table.
+            isDeleteSuccess = mDB.deleteWorkers( idList );
         }
 
         if( isDeleteSuccess ) {
             checkAllItems(false);
         } else {
-            Snackbar.make(((Activity) mContext).findViewById(R.id.workerDeleteButton), "Deleting items was unsuccessful.",
+            Snackbar.make(((Activity) mContext).findViewById(R.id.workerDeleteButton), "Removal unsuccessful.",
                     Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }

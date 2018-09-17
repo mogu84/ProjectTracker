@@ -110,7 +110,6 @@ public class ProjectWorkerListAdapter extends RecyclerView.Adapter<ProjectWorker
         holder.workerItemView.setOnClickListener(new WorkerOnClickListener( current ) {
             @Override
             public void onClick(View v) {
-                // TODO: add an UPDATE activity here
                 /*
                 Snackbar.make(v, "View position #" + mPosition + ", adapter pos #" + mAdapterPos + ".", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();

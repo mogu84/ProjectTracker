@@ -115,7 +115,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
                     .setAction("Action", null).show();
         }
 
-        Log.d(LOG_TEXT, "ADD BUTTON PUSHED: ");
+        //Log.d(LOG_TEXT, "ADD BUTTON PUSHED: ");
 
         if (isSubmitAllowed) {
             if( isUpdateWorker )
@@ -133,7 +133,7 @@ public class AddOrUpdateWorker extends AppCompatActivity implements DialogInterf
                             .addNextIntentWithParentStack(workersIntent)
                             .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            // TODO: add popup query here, whether the user wants to also update the created worker (like adding workers).
+            // TODO: add popup query here, whether the user wants to also update the created worker projects (like adding workers).
 
             try {
                 pendingIntent.send(this, 0, workersIntent);

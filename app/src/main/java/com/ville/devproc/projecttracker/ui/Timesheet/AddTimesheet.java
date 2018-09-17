@@ -49,6 +49,13 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
             finish();
         }
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitTimesheets(v);
+            }
+        });
+
         mProjectNameTextView = findViewById(R.id.add_timesheet_projectname);
         mProjectTimesheetDate = findViewById(R.id.add_timesheet_date);
         mProjectTimesheetDate.setOnClickListener(dateListener);
@@ -107,5 +114,8 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
         v.setFocusableInTouchMode(true);
         v.requestFocus();
         boolean result = mAdapter.saveTimesheetHours();
+
+        Intent intent = new Intent(this, AddTimesheetListProjects.class);
+        startActivity(intent);
     }
 }
