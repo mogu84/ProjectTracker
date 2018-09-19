@@ -71,7 +71,7 @@
                 android:value="com.ville.devproc.projecttracker.MainActivity" />
         </activity>
         <activity
-            android:name="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheet"
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.AddProjectTimesheet"
             android:label="@string/title_activity_add_timesheet"
             android:parentActivityName="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheetListProjects"
             android:theme="@style/AppTheme.NoActionBar">

@@ -14,7 +14,7 @@ import com.ville.devproc.projecttracker.data.db.DBHelper;
 public class ViewTimesheetListProjects extends AppCompatActivity {
     private DBHelper mDbHelper;
     private RecyclerView mRecyclerView;
-    private ViewTimesheetProjectListAdapter mAdapter;
+    private ViewTimesheetListProjectsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class ViewTimesheetListProjects extends AppCompatActivity {
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.lstProjectRecyclerView);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new ViewTimesheetProjectListAdapter(this, mDbHelper);
+        mAdapter = new ViewTimesheetListProjectsAdapter(this, mDbHelper);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.

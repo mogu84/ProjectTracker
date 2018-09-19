@@ -14,7 +14,7 @@ import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 
-public class AddTimesheetProjectListAdapter extends RecyclerView.Adapter<AddTimesheetProjectListAdapter.ProjectViewHolder> {
+public class AddTimesheetListProjectsAdapter extends RecyclerView.Adapter<AddTimesheetListProjectsAdapter.ProjectViewHolder> {
 
     /**
      *  Custom view holder with a textview and a checkbox.
@@ -38,7 +38,7 @@ public class AddTimesheetProjectListAdapter extends RecyclerView.Adapter<AddTime
     private View rootView;
 
 
-    public AddTimesheetProjectListAdapter(Context context, DBHelper db) {
+    public AddTimesheetListProjectsAdapter(Context context, DBHelper db) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mDB = db;
@@ -46,13 +46,13 @@ public class AddTimesheetProjectListAdapter extends RecyclerView.Adapter<AddTime
     }
 
     @Override
-    public AddTimesheetProjectListAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AddTimesheetListProjectsAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.timesheetprojectlist_item, parent, false);
         return new ProjectViewHolder(mItemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AddTimesheetProjectListAdapter.ProjectViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull AddTimesheetListProjectsAdapter.ProjectViewHolder holder, final int position) {
 
         final Project current = mDB.queryTimesheetProject(position);
 
@@ -70,7 +70,7 @@ public class AddTimesheetProjectListAdapter extends RecyclerView.Adapter<AddTime
                         .setAction("Action", null).show();
                 */
 
-                Intent intent = new Intent(mContext, AddTimesheet.class);
+                Intent intent = new Intent(mContext, AddProjectTimesheet.class);
                 intent.putExtra(Project.TABLE_NAME, current.toString());
                 mContext.startActivity(intent);
 

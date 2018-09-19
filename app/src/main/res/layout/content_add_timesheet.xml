@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ville.devproc.projecttracker.ui.Timesheet.AddTimesheet"
+    tools:context="com.ville.devproc.projecttracker.ui.Timesheet.AddProjectTimesheet"
     tools:showIn="@layout/activity_add_timesheet">
 
     <TextView
@@ -18,15 +18,30 @@
         android:layout_marginTop="8dp"
         android:text="project"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/add_timesheet_date"
+        app:layout_constraintEnd_toStartOf="@+id/add_timesheet_prevDateBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/add_timesheet_prevDateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:onClick="getPrevDay"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="7dp"
+        android:text="&lt;"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/add_timesheet_projectname"
+        app:layout_constraintEnd_toStartOf="@+id/add_timesheet_date"
+        app:layout_constraintStart_toEndOf="@+id/add_timesheet_projectname"
+        app:layout_constraintTop_toTopOf="@+id/add_timesheet_projectname" />
 
     <TextView
         android:id="@+id/add_timesheet_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:background="#ffffe2"
@@ -38,8 +53,26 @@
         android:text="select date"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_timesheet_projectname"
+        app:layout_constraintEnd_toEndOf="@+id/add_timesheet_nextDateBtn"
+        app:layout_constraintStart_toEndOf="@+id/add_timesheet_prevDateBtn"
+        app:layout_constraintTop_toTopOf="@+id/add_timesheet_projectname" />
+
+    <Button
+        android:id="@+id/add_timesheet_nextDateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:onClick="getNextDay"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="7dp"
+        android:text="&gt;"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/add_timesheet_projectname"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/add_timesheet_projectname"
+        app:layout_constraintStart_toEndOf="@+id/add_timesheet_date"
         app:layout_constraintTop_toTopOf="@+id/add_timesheet_projectname" />
 
     <LinearLayout

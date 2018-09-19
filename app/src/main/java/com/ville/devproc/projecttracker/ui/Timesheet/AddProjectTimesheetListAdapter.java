@@ -133,7 +133,7 @@ public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProj
                 }
             }
         } catch( Exception e) {
-            Log.e("AddTimesheet", "Error updating timesheet: " + e.getMessage());
+            Log.e("AddProjectTimesheet", "Error updating timesheet: " + e.getMessage());
             return false;
         }
 

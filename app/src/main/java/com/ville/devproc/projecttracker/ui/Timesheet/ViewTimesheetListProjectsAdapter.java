@@ -2,7 +2,6 @@ package com.ville.devproc.projecttracker.ui.Timesheet;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -15,9 +14,7 @@ import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 
-import java.text.DecimalFormat;
-
-public class ViewTimesheetProjectListAdapter extends RecyclerView.Adapter<ViewTimesheetProjectListAdapter.ProjectViewHolder> {
+public class ViewTimesheetListProjectsAdapter extends RecyclerView.Adapter<ViewTimesheetListProjectsAdapter.ProjectViewHolder> {
 
     /**
      *  Custom view holder with a textview and a checkbox.
@@ -43,7 +40,7 @@ public class ViewTimesheetProjectListAdapter extends RecyclerView.Adapter<ViewTi
     private View rootView;
 
 
-    public ViewTimesheetProjectListAdapter(Context context, DBHelper db) {
+    public ViewTimesheetListProjectsAdapter(Context context, DBHelper db) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mDB = db;
@@ -51,13 +48,13 @@ public class ViewTimesheetProjectListAdapter extends RecyclerView.Adapter<ViewTi
     }
 
     @Override
-    public ViewTimesheetProjectListAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewTimesheetListProjectsAdapter.ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.timesheetprojectlist_item, parent, false);
         return new ProjectViewHolder(mItemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewTimesheetProjectListAdapter.ProjectViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewTimesheetListProjectsAdapter.ProjectViewHolder holder, final int position) {
 
         final Project current = mDB.queryTimesheetProjectWithDuration(position);
 
@@ -77,7 +74,7 @@ public class ViewTimesheetProjectListAdapter extends RecyclerView.Adapter<ViewTi
                         .setAction("Action", null).show();
 
                 /*
-                Intent intent = new Intent(mContext, AddTimesheet.class);
+                Intent intent = new Intent(mContext, AddProjectTimesheet.class);
                 intent.putExtra(Project.TABLE_NAME, current.toString());
                 mContext.startActivity(intent);
                 */

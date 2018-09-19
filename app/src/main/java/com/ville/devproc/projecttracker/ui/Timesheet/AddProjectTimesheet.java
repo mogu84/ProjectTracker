@@ -25,7 +25,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AddTimesheet extends AppCompatActivity implements AddTimesheetDatePickerFragment.DatePickerDialogListener {
+public class AddProjectTimesheet extends AppCompatActivity implements AddTimesheetDatePickerFragment.DatePickerDialogListener {
     private Project mSelectedProject;
     private TextView mProjectNameTextView;
     private TextView mProjectTimesheetDate;
@@ -40,7 +40,11 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
         setContentView(R.layout.activity_add_timesheet);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch(Exception e) {
+            Log.e("AddProjectTimesheet", "setDisplayHomeAsUpEnabled error: " + e.getMessage());
+        }
 
         Intent intent = getIntent();
         if(!intent.hasExtra(Project.TABLE_NAME)) {
@@ -100,6 +104,11 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
     public void onFinishDatePickerDialogListener(String inputText) {
         mCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
         mCalendar.setTimeInMillis( Long.parseLong(inputText) );
+
+        updateDateAndView();
+    }
+
+    public void updateDateAndView() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("fi", "FI"));
 
         mProjectTimesheetDate.setText(sdf.format(mCalendar.getTime()));
@@ -107,6 +116,10 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
         mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         mAdapter.updateDate(mCalendar.getTimeInMillis());
         mAdapter.notifyDataSetChanged();
+
+        mProjectNameTextView.setFocusable(true);
+        mProjectNameTextView.setFocusableInTouchMode(true);
+        mProjectNameTextView.requestFocus();
     }
 
     public void submitTimesheets(View v) {
@@ -118,4 +131,17 @@ public class AddTimesheet extends AppCompatActivity implements AddTimesheetDateP
         Intent intent = new Intent(this, AddTimesheetListProjects.class);
         startActivity(intent);
     }
+
+    public void getPrevDay(View v) {
+        mCalendar.add(Calendar.DATE, -1);
+
+        updateDateAndView();
+    }
+
+    public void getNextDay(View v) {
+        mCalendar.add(Calendar.DATE, 1);
+
+        updateDateAndView();
+    }
+
 }
