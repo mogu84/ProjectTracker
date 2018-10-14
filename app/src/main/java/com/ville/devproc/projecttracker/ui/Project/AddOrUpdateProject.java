@@ -1,8 +1,6 @@
 package com.ville.devproc.projecttracker.ui.Project;
 
 import android.app.DialogFragment;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,8 +17,6 @@ import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 import com.ville.devproc.projecttracker.ui.ProjectWorker.EditProjectWorkers;
-import com.ville.devproc.projecttracker.ui.Worker.AddOrUpdateWorker;
-import com.ville.devproc.projecttracker.ui.Worker.Workers;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

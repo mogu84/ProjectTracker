@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.database.Cursor.FIELD_TYPE_NULL;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     private static class DatabaseManager {
@@ -1228,4 +1230,44 @@ public class DBHelper extends SQLiteOpenHelper {
             return project;
         }
     }
+    /** Query Project Timesheet duration by month*/
+    public List<Timesheet> getProjectTimesheetByMonth(long projectId) {
+        List<Timesheet> timesheets = new ArrayList<>();
+
+        DatabaseManager.initializeInstance(this);
+        SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
+
+        String selectQuery =
+                "SELECT strftime('%Y-%m', ts." + Timesheet.COLUMN_INPUT_DATE + " / 1000, 'unixepoch') as 'date_str', w." + Timesheet.COLUMN_WORKER_ID + ", w." + Worker.COLUMN_NAME + ", SUM(ts." + Timesheet.COLUMN_DURATION + ") AS " + Timesheet.COLUMN_DURATION + " " +
+                "FROM " + Timesheet.TABLE_NAME + " ts, " + Worker.TABLE_NAME + " w " +
+                "WHERE ts." + Timesheet.COLUMN_PROJECT_ID + " IN ("+ projectId +") AND ts." + Timesheet.COLUMN_WORKER_ID + " = w." + Worker.COLUMN_WORKER_ID + " " +
+                "GROUP BY ts." + Timesheet.COLUMN_WORKER_ID + ", strftime('%Y-%m', ts." + Timesheet.COLUMN_INPUT_DATE + " / 1000, 'unixepoch')";
+
+        // Log.e(LOG, selectQuery);
+
+        try {
+            Cursor c = db.rawQuery(selectQuery, null);
+
+            // looping through all rows and adding to list
+            if (c.moveToFirst()) {
+                do {
+                    Timesheet timesheet = new Timesheet();
+                    timesheet.setProjectId(Integer.parseInt(Long.toString(projectId)));
+                    timesheet.setWorkerId(c.getInt(c.getColumnIndex(Timesheet.COLUMN_WORKER_ID)));
+                    timesheet.setWorkerName(c.getString(c.getColumnIndex(Worker.COLUMN_NAME)));
+                    timesheet.setInputDateString(c.getString(c.getColumnIndex("date_str")));
+                    timesheet.setDuration(c.getInt(c.getColumnIndex(Timesheet.COLUMN_DURATION)));
+
+                    // adding to Worker list
+                    timesheets.add(timesheet);
+                } while (c.moveToNext());
+            }
+        } catch(Exception e) {
+            Log.e(LOG, "Can't get Timesheets by month: " + e.getMessage());
+        }
+
+        return timesheets;
+    }
+
+
 }

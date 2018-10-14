@@ -9,4 +9,6 @@
     <string name="title_activity_edit_project_workers">Edit Project Workers</string>
     <string name="title_activity_list_projects">ListProjects</string>
     <string name="title_activity_add_timesheet">AddTimesheet</string>
+    <string name="title_activity_view_timesheet_list_project_hours">ViewTimesheetListProjectHours
+    </string>
 </resources>

@@ -88,6 +88,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ville.devproc.projecttracker.MainActivity" />
         </activity>
+        <activity
+            android:name="com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjectHours"
+            android:label="@string/title_activity_view_timesheet_list_project_hours"
+            android:parentActivityName="com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjects"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjects" />
+        </activity>
     </application>
 
 </manifest>

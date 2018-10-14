@@ -22,6 +22,7 @@ public class Timesheet {
     private String worker_name;
     private long duration;
     private long input_date;
+    private String input_strDate;
 
     public static final String CREATE_TABLE = "" +
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -78,14 +79,21 @@ public class Timesheet {
         this.input_date = input_date;
     }
 
+    public String getInputDateString() { return input_strDate; }
+
+    public void setInputDateString(String input_strDate) { this.input_strDate = input_strDate; }
+
     public String toString() {
         JSONObject returnObj = new JSONObject();
 
         try {
             returnObj.put(COLUMN_TIMESHEET_ID, this.getTimesheetId());
+            returnObj.put("str" + COLUMN_PROJECT_ID, this.getProjectName());
             returnObj.put(COLUMN_PROJECT_ID, this.getProjectId());
             returnObj.put(COLUMN_WORKER_ID, this.getWorkerId());
+            returnObj.put("str" + COLUMN_WORKER_ID, this.getWorkerName());
             returnObj.put(COLUMN_INPUT_DATE, this.getInputDate());
+            returnObj.put("str" + COLUMN_INPUT_DATE, this.getInputDateString());
             returnObj.put(COLUMN_DURATION, this.getDuration());
         } catch (Exception e) {
             Log.e("Timesheet : " + TABLE_NAME, "JSON TOSTRING ERROR: " + e.getMessage() );
