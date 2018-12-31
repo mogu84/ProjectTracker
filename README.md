@@ -51,6 +51,9 @@
 	  
 5. **View Timesheets View**  
    ![alt text](./_img/5__ViewTimesheetsView.png "View Timesheets View")
+   
+   5.1 **ViewTimesheetListProjectHoursByMonth**
+      ![alt text](./_img/5_1_ViewTimesheetListProjectHoursByMonth.png "View saved Project hours by month")
 
 
 ## **Important TODO-list**

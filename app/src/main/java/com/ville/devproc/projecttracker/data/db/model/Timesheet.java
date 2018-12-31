@@ -2,8 +2,12 @@ package com.ville.devproc.projecttracker.data.db.model;
 
 import android.util.Log;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Calendar;
 
 public class Timesheet {
 
@@ -21,8 +25,7 @@ public class Timesheet {
     private int worker_id;
     private String worker_name;
     private long duration;
-    private long input_date;
-    private String input_strDate;
+    private DateTime input_date = null;
 
     public static final String CREATE_TABLE = "" +
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -71,17 +74,13 @@ public class Timesheet {
 
     public void setDuration(long duration) { this.duration = duration; }
 
-    public long getInputDate() {
-        return input_date;
+    public DateTime getInputDate() {
+        return input_date.toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay();
     }
 
-    public void setInputDate(long input_date) {
-        this.input_date = input_date;
+    public void setInputDate(DateTime input_date) {
+        this.input_date = input_date.toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay();
     }
-
-    public String getInputDateString() { return input_strDate; }
-
-    public void setInputDateString(String input_strDate) { this.input_strDate = input_strDate; }
 
     public String toString() {
         JSONObject returnObj = new JSONObject();
@@ -92,8 +91,11 @@ public class Timesheet {
             returnObj.put(COLUMN_PROJECT_ID, this.getProjectId());
             returnObj.put(COLUMN_WORKER_ID, this.getWorkerId());
             returnObj.put("str" + COLUMN_WORKER_ID, this.getWorkerName());
-            returnObj.put(COLUMN_INPUT_DATE, this.getInputDate());
-            returnObj.put("str" + COLUMN_INPUT_DATE, this.getInputDateString());
+            if ( this.input_date != null)
+                returnObj.put(COLUMN_INPUT_DATE, this.getInputDate().getMillis());
+            else
+                returnObj.put(COLUMN_INPUT_DATE, "N_A");
+
             returnObj.put(COLUMN_DURATION, this.getDuration());
         } catch (Exception e) {
             Log.e("Timesheet : " + TABLE_NAME, "JSON TOSTRING ERROR: " + e.getMessage() );

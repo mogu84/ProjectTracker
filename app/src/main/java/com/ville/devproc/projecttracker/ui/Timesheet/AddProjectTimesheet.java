@@ -16,6 +16,9 @@ import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
 import com.ville.devproc.projecttracker.data.db.model.Project;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -27,7 +30,7 @@ public class AddProjectTimesheet extends AppCompatActivity implements AddTimeshe
     private TextView mProjectTimesheetDate;
     private RecyclerView mRecyclerView;
     private DBHelper mDbHelper;
-    private Calendar mCalendar;
+    private DateTime mCalendar;
     private AddProjectTimesheetListAdapter mAdapter;
 
     @Override
@@ -69,18 +72,12 @@ public class AddProjectTimesheet extends AppCompatActivity implements AddTimeshe
         mSelectedProject = new Project(intent.getStringExtra(Project.TABLE_NAME));
         mProjectNameTextView.setText(mSelectedProject.getName());
 
-        mCalendar = Calendar.getInstance();
-        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        mCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        mCalendar.set(Calendar.MINUTE, 0);
-        mCalendar.set(Calendar.SECOND, 0);
-        mCalendar.set(Calendar.MILLISECOND, 0);
-        mCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
+        mCalendar = new DateTime().toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("fi", "FI"));
-        mProjectTimesheetDate.setText(sdf.format(mCalendar.getTime()));
+        mProjectTimesheetDate.setText(sdf.format(mCalendar.toDateTime(DateTimeZone.forID("Europe/Helsinki")).toDate()));
 
-        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        mAdapter = new AddProjectTimesheetListAdapter(this, mDbHelper, mSelectedProject.getId(), mCalendar.getTimeInMillis() );
+        //mCalendar.toDateTime(DateTimeZone.UTC);
+        mAdapter = new AddProjectTimesheetListAdapter(this, mDbHelper, mSelectedProject.getId(), mCalendar );
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -90,16 +87,18 @@ public class AddProjectTimesheet extends AppCompatActivity implements AddTimeshe
         public void onClick(View v) {
             DialogFragment newDateFragment = new AddTimesheetDatePickerFragment();
             Bundle bundle = new Bundle();
-            bundle.putLong("date", mCalendar.getTimeInMillis());
+            bundle.putSerializable("date", mCalendar);
+            //bundle.putLong("date", mCalendar.getMillis());
             newDateFragment.setArguments(bundle);
             newDateFragment.show(getFragmentManager(), "AddTimesheetDatePicker");
         }
     };
 
+
+
     @Override
     public void onFinishDatePickerDialogListener(String inputText) {
-        mCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Helsinki"));
-        mCalendar.setTimeInMillis( Long.parseLong(inputText) );
+        mCalendar = new DateTime(Long.parseLong(inputText), DateTimeZone.UTC);
 
         updateDateAndView();
     }
@@ -107,10 +106,9 @@ public class AddProjectTimesheet extends AppCompatActivity implements AddTimeshe
     public void updateDateAndView() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("fi", "FI"));
 
-        mProjectTimesheetDate.setText(sdf.format(mCalendar.getTime()));
+        mProjectTimesheetDate.setText(sdf.format(mCalendar.toDateTime(DateTimeZone.forID("Europe/Helsinki")).toDate()));
 
-        mCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-        mAdapter.updateDate(mCalendar.getTimeInMillis());
+        mAdapter.updateDate(mCalendar);
         mAdapter.notifyDataSetChanged();
 
         mProjectNameTextView.setFocusable(true);
@@ -129,13 +127,15 @@ public class AddProjectTimesheet extends AppCompatActivity implements AddTimeshe
     }
 
     public void getPrevDay(View v) {
-        mCalendar.add(Calendar.DATE, -1);
+        //mCalendar.add(Calendar.DATE, -1);
+        mCalendar = mCalendar.minusDays(1);
 
         updateDateAndView();
     }
 
     public void getNextDay(View v) {
-        mCalendar.add(Calendar.DATE, 1);
+        //mCalendar.add(Calendar.DATE, 1);
+        mCalendar = mCalendar.plusDays(1);
 
         updateDateAndView();
     }

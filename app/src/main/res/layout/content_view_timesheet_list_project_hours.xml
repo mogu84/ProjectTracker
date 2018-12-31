@@ -4,8 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.ville.devproc.projecttracker.ui.Timesheet.ViewTimesheetListProjectHours"
     tools:showIn="@layout/activity_view_timesheet_list_project_hours">
 
+    <TextView
+        android:id="@+id/scroll_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:editable="true"
+        android:ellipsize="end"
+        android:longClickable="true"
+        android:maxLines="100"
+        android:scrollbars="vertical"
+        android:text="TextView"
+        android:textSize="9sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

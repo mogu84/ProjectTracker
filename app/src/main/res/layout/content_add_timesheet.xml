@@ -53,7 +53,7 @@
         android:text="select date"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/add_timesheet_projectname"
-        app:layout_constraintEnd_toEndOf="@+id/add_timesheet_nextDateBtn"
+        app:layout_constraintEnd_toStartOf="@+id/add_timesheet_nextDateBtn"
         app:layout_constraintStart_toEndOf="@+id/add_timesheet_prevDateBtn"
         app:layout_constraintTop_toTopOf="@+id/add_timesheet_projectname" />
 

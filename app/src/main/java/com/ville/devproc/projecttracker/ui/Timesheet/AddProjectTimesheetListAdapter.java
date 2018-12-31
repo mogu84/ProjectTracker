@@ -18,6 +18,8 @@ import com.ville.devproc.projecttracker.data.db.model.Project;
 import com.ville.devproc.projecttracker.data.db.model.Timesheet;
 import com.ville.devproc.projecttracker.data.db.model.Worker;
 
+import org.joda.time.DateTime;
+
 import java.util.HashMap;
 
 public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProjectTimesheetListAdapter.ProjectViewHolder> {
@@ -45,11 +47,11 @@ public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProj
     private DBHelper mDB;
     private View rootView;
     private int mProjectId;
-    private long mDate;
+    private DateTime mDate;
     private HashMap<Integer, Timesheet> mTimesheetMap = new HashMap<>();
 
 
-    public AddProjectTimesheetListAdapter(Context context, DBHelper db, int projectId, long date) {
+    public AddProjectTimesheetListAdapter(Context context, DBHelper db, int projectId, DateTime date) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mDB = db;
@@ -101,7 +103,7 @@ public class AddProjectTimesheetListAdapter extends RecyclerView.Adapter<AddProj
     }
 
 
-    protected void updateDate(long date) { this.mDate = date; }
+    protected void updateDate(DateTime date) { this.mDate = date; }
 
     protected class HourOnChangeListener implements View.OnFocusChangeListener {
 

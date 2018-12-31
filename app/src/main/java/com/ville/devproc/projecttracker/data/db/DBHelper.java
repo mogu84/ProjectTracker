@@ -15,11 +15,12 @@ import com.ville.devproc.projecttracker.data.db.model.ProjectWorker;
 import com.ville.devproc.projecttracker.data.db.model.Timesheet;
 import com.ville.devproc.projecttracker.data.db.model.Worker;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static android.database.Cursor.FIELD_TYPE_NULL;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -71,7 +72,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String LOG = DBHelper.class.getName();
 
     // Database version
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     //Database name
     public static final String DATABASE_NAME = "projects_db";
 
@@ -895,7 +896,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     // ------------------ Timesheet CRUD methods -------------------- //
     /** Query ProjectWorker Projects*/
     public Project queryTimesheetProject(int position) {
@@ -949,10 +949,9 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
     /** Query Timesheet worker rows or create empty Timesheet out from ProjectWorker rows*/
-    public Timesheet queryTimesheetProject(int projectId, long date, int position) {
+    public Timesheet queryTimesheetProject(int projectId, DateTime date, int position) {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
-
 
         int pwWorkerID = 0;
 
@@ -984,7 +983,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     "FROM " + Timesheet.TABLE_NAME +
                     " WHERE " + Timesheet.COLUMN_PROJECT_ID + " = " + projectId +
                     " AND " + Timesheet.COLUMN_WORKER_ID + " = " + pwWorkerID +
-                    " AND " + Timesheet.COLUMN_INPUT_DATE + " = " + date;
+                    " AND " + Timesheet.COLUMN_INPUT_DATE + " = " + date.toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis();
+
             c = db.rawQuery(selectTimesheetQuery, null);
             if(c != null)
                 c.moveToFirst();
@@ -1002,7 +1002,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
     /** Get Timesheet project or ProjectWorker project Worker count */
-    public long getTimesheetProjectWorkerCount(int projectId, long date) {
+    public long getTimesheetProjectWorkerCount(int projectId, DateTime date) {
         DatabaseManager.initializeInstance(this);
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
@@ -1032,7 +1032,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put( Timesheet.COLUMN_PROJECT_ID, timesheet.getProjectId() );
         values.put( Timesheet.COLUMN_WORKER_ID, timesheet.getWorkerId() );
         values.put( Timesheet.COLUMN_DURATION, timesheet.getDuration() );
-        values.put( Timesheet.COLUMN_INPUT_DATE, timesheet.getInputDate() );
+        values.put( Timesheet.COLUMN_INPUT_DATE, timesheet.getInputDate().withTimeAtStartOfDay().getMillis() );
 
         // insert row
         long timesheetId = db.insert(Timesheet.TABLE_NAME, null, values);
@@ -1041,7 +1041,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return timesheetId;
     }
     /** Get Timesheets of a Project between startDate and endDate*/
-    public List<Timesheet> getProjectTimesheetsFrom(long projectId, long startDate, long endDate) {
+    public List<Timesheet> getProjectTimesheetsFrom(long projectId, DateTime startDate, DateTime endDate) {
         List<Timesheet> timesheets = new ArrayList<Timesheet>();
 
         DatabaseManager.initializeInstance(this);
@@ -1049,8 +1049,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT * FROM " + Timesheet.TABLE_NAME + " WHERE " +
                 Timesheet.COLUMN_PROJECT_ID + " = " + projectId + " AND " +
-                Timesheet.COLUMN_INPUT_DATE + " >= " + startDate + " AND " +
-                Timesheet.COLUMN_INPUT_DATE + " <= " + endDate;
+                Timesheet.COLUMN_INPUT_DATE + " >= " + startDate.toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis() + " AND " +
+                Timesheet.COLUMN_INPUT_DATE + " <= " + endDate.toDateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis();
 
         Log.e(LOG, selectQuery);
 
@@ -1064,7 +1064,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 timesheet.setProjectId( c.getInt( c.getColumnIndex( Timesheet.COLUMN_PROJECT_ID ) ) );
                 timesheet.setWorkerId( c.getInt( c.getColumnIndex( Timesheet.COLUMN_WORKER_ID ) ) );
                 timesheet.setDuration( c.getInt( c.getColumnIndex( Timesheet.COLUMN_DURATION ) ) );
-                timesheet.setInputDate( c.getInt( c.getColumnIndex( Timesheet.COLUMN_INPUT_DATE ) ) );
+                timesheet.setInputDate( new DateTime(c.getInt( c.getColumnIndex( Timesheet.COLUMN_INPUT_DATE ) ), DateTimeZone.UTC) );
 
                 // adding to Workder list
                 timesheets.add(timesheet);
@@ -1093,7 +1093,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 timesheet.setProjectId( c.getInt( c.getColumnIndex( Timesheet.COLUMN_PROJECT_ID ) ) );
                 timesheet.setWorkerId( c.getInt( c.getColumnIndex( Timesheet.COLUMN_WORKER_ID ) ) );
                 timesheet.setDuration( c.getInt( c.getColumnIndex( Timesheet.COLUMN_DURATION ) ) );
-                timesheet.setInputDate( c.getInt( c.getColumnIndex( Timesheet.COLUMN_INPUT_DATE ) ) );
+                timesheet.setInputDate( new DateTime(c.getInt( c.getColumnIndex( Timesheet.COLUMN_INPUT_DATE ) ), DateTimeZone.UTC).withTimeAtStartOfDay() );
 
                 // adding to projects list
                 timesheets.add(timesheet);
@@ -1112,7 +1112,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put( Timesheet.COLUMN_PROJECT_ID, timesheet.getProjectId() );
         values.put( Timesheet.COLUMN_WORKER_ID, timesheet.getWorkerId() );
         values.put( Timesheet.COLUMN_DURATION, timesheet.getDuration() );
-        values.put( Timesheet.COLUMN_INPUT_DATE, timesheet.getInputDate() );
+        values.put( Timesheet.COLUMN_INPUT_DATE, timesheet.getInputDate().getMillis() );
 
         // updating row(s)
         int updateResult = db.update(Timesheet.TABLE_NAME, values, Timesheet.COLUMN_TIMESHEET_ID + " = ?",
@@ -1238,12 +1238,18 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
         String selectQuery =
-                "SELECT strftime('%Y-%m', ts." + Timesheet.COLUMN_INPUT_DATE + " / 1000, 'unixepoch') as 'date_str', w." + Timesheet.COLUMN_WORKER_ID + ", w." + Worker.COLUMN_NAME + ", SUM(ts." + Timesheet.COLUMN_DURATION + ") AS " + Timesheet.COLUMN_DURATION + " " +
+                "SELECT " +
+                        "strftime('%Y-%m', ts." + Timesheet.COLUMN_INPUT_DATE + " / 1000, 'unixepoch') as 'date_str', "+
+                        "w." + Timesheet.COLUMN_WORKER_ID + ", "+
+                        "w." + Worker.COLUMN_NAME + ", "+
+                        "SUM(ts." + Timesheet.COLUMN_DURATION + ") AS " + Timesheet.COLUMN_DURATION + ", "+
+                        "ts." + Timesheet.COLUMN_INPUT_DATE + " " +
                 "FROM " + Timesheet.TABLE_NAME + " ts, " + Worker.TABLE_NAME + " w " +
                 "WHERE ts." + Timesheet.COLUMN_PROJECT_ID + " IN ("+ projectId +") AND ts." + Timesheet.COLUMN_WORKER_ID + " = w." + Worker.COLUMN_WORKER_ID + " " +
                 "GROUP BY ts." + Timesheet.COLUMN_WORKER_ID + ", strftime('%Y-%m', ts." + Timesheet.COLUMN_INPUT_DATE + " / 1000, 'unixepoch')";
 
-        // Log.e(LOG, selectQuery);
+
+        //Log.e(LOG, selectQuery);
 
         try {
             Cursor c = db.rawQuery(selectQuery, null);
@@ -1255,8 +1261,15 @@ public class DBHelper extends SQLiteOpenHelper {
                     timesheet.setProjectId(Integer.parseInt(Long.toString(projectId)));
                     timesheet.setWorkerId(c.getInt(c.getColumnIndex(Timesheet.COLUMN_WORKER_ID)));
                     timesheet.setWorkerName(c.getString(c.getColumnIndex(Worker.COLUMN_NAME)));
-                    timesheet.setInputDateString(c.getString(c.getColumnIndex("date_str")));
+                    timesheet.setInputDate(new DateTime( c.getLong(c.getColumnIndex(Timesheet.COLUMN_INPUT_DATE)), DateTimeZone.UTC) );
                     timesheet.setDuration(c.getInt(c.getColumnIndex(Timesheet.COLUMN_DURATION)));
+
+                    selectQuery = "SELECT " + Project.COLUMN_NAME + " FROM " + Project.TABLE_NAME + " WHERE " + Project.COLUMN_PROJECT_ID + " = " + projectId;
+                    Cursor c2 = db.rawQuery(selectQuery, null);
+                    if( c2.moveToFirst()) {
+                        timesheet.setProjectName(c2.getString(c2.getColumnIndex(Project.COLUMN_NAME)));
+                    }
+                    c2.close();
 
                     // adding to Worker list
                     timesheets.add(timesheet);

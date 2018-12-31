@@ -7,32 +7,37 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class AddTimesheetDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     private DatePickerDialogListener mListener;
-    private Calendar mDate;
+    private DateTime mDate;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Bundle bundle = getArguments();
         // Use the current date as the default date in the picker
-        mDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        // mDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
         if( bundle.containsKey("date")) {
             try {
-                mDate.setTimeInMillis(bundle.getLong("date"));
+                mDate = (DateTime) bundle.getSerializable("date");
             } catch (Exception e) {
 
             }
         }
 
-        int year = mDate.get(Calendar.YEAR);
-        int month = mDate.get(Calendar.MONTH);
-        int day = mDate.get(Calendar.DAY_OF_MONTH);
+        mDate.toDateTime(DateTimeZone.UTC);
+
+        int year = mDate.getYear();
+        int month = mDate.getMonthOfYear() -1;
+        int day = mDate.getDayOfMonth();
 
         return new DatePickerDialog(getActivity(),this, year, month, day);
     }

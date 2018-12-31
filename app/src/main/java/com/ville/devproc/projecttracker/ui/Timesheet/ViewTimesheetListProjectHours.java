@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ville.devproc.prTracker.R;
 import com.ville.devproc.projecttracker.data.db.DBHelper;
@@ -41,13 +43,34 @@ public class ViewTimesheetListProjectHours extends AppCompatActivity {
 
         List<Timesheet> lstTimesheets = mDbHelper.getProjectTimesheetByMonth(mSelectedProject.getId());
 
-        for( int i = 0; i < lstTimesheets.size(); i++) {
-            System.out.println("ViewTimesheetProjectHoursByMonth\t" + lstTimesheets.get(i).toString());
+        String str = "";
+        String lastWorker = "";
+        for (int i = 0; i < lstTimesheets.size(); i++) {
+            Timesheet sheet = lstTimesheets.get(i);
+            String sheetStr = "";
+
+            if( i == 0 )
+                str = "Project: " + sheet.getProjectName() + "(" + sheet.getProjectId() + ")";
+
+            if( lastWorker.contentEquals( sheet.getWorkerName() ) ) {
+                sheetStr += "\t\t" + sheet.getInputDate().getMonthOfYear() + " / " + sheet.getInputDate().getYear() + " - " + String.format("%.02f", sheet.getDuration() / 60) + " hours \r\n";
+            } else {
+                sheetStr = "\r\n\tWorker: " + sheet.getWorkerName() + " (" + sheet.getWorkerId() + ")\r\n";
+                sheetStr += "\t\t" + sheet.getInputDate().getMonthOfYear() + " / " + sheet.getInputDate().getYear() + " - " + String.format("%.02f", sheet.getDuration() / 60) + " hours \r\n";
+                lastWorker = sheet.getWorkerName();
+            }
+
+            str += sheetStr;
         }
+
 
         View rootView = ((Activity)this).getWindow().getDecorView().findViewById(android.R.id.content);
         Snackbar.make(rootView, "Loaded timesheets: " + Integer.toString(lstTimesheets.size()), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+
+        TextView textview = rootView.findViewById(R.id.scroll_textview);
+        textview.setMovementMethod(new ScrollingMovementMethod());
+        textview.setText(str);
 
     }
 }
